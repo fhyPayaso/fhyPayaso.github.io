@@ -79,19 +79,19 @@
 
 
 
-<meta name="description" content="作者：fhyPayaso  1. Java中对象和对象引用的区别先看一个例子 :  Person person; person = new Person(&amp;quot;name&amp;quot;); 上面两行代码中，第一行person属于声明了一个Person类的引用，而第二行的new才是真正创建了一个对象。 2.Java中的内存环境Java在JVM所虚拟的内存环境中运行，内存可以分为三个部分：栈，堆，">
+<meta name="description" content="初步探究android的内存机制，内存泄漏的原因和解决办法，以及检测神器—LeakCanary的使用">
 <meta name="keywords" content="android">
 <meta property="og:type" content="article">
 <meta property="og:title" content="初探Android中内存泄漏">
 <meta property="og:url" content="http://yoursite.com/2017/12/16/初探android中内存泄漏/index.html">
 <meta property="og:site_name" content="fhyPayaso的博客">
-<meta property="og:description" content="作者：fhyPayaso  1. Java中对象和对象引用的区别先看一个例子 :  Person person; person = new Person(&amp;quot;name&amp;quot;); 上面两行代码中，第一行person属于声明了一个Person类的引用，而第二行的new才是真正创建了一个对象。 2.Java中的内存环境Java在JVM所虚拟的内存环境中运行，内存可以分为三个部分：栈，堆，">
+<meta property="og:description" content="初步探究android的内存机制，内存泄漏的原因和解决办法，以及检测神器—LeakCanary的使用">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://ws1.sinaimg.cn/large/006yrKRely1fmgcyggl6qj30a60gumxj.jpg">
-<meta property="og:updated_time" content="2017-12-16T14:23:28.000Z">
+<meta property="og:updated_time" content="2017-12-16T14:48:54.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="初探Android中内存泄漏">
-<meta name="twitter:description" content="作者：fhyPayaso  1. Java中对象和对象引用的区别先看一个例子 :  Person person; person = new Person(&amp;quot;name&amp;quot;); 上面两行代码中，第一行person属于声明了一个Person类的引用，而第二行的new才是真正创建了一个对象。 2.Java中的内存环境Java在JVM所虚拟的内存环境中运行，内存可以分为三个部分：栈，堆，">
+<meta name="twitter:description" content="初步探究android的内存机制，内存泄漏的原因和解决办法，以及检测神器—LeakCanary的使用">
 <meta name="twitter:image" content="https://ws1.sinaimg.cn/large/006yrKRely1fmgcyggl6qj30a60gumxj.jpg">
 
 
@@ -307,7 +307,8 @@
       
 
       
-        <blockquote>
+        <p>初步探究android的内存机制，内存泄漏的原因和解决办法，以及检测神器—LeakCanary的使用<br><a id="more"></a></p>
+<blockquote>
 <p>作者：fhyPayaso</p>
 </blockquote>
 <h3 id="1-Java中对象和对象引用的区别"><a href="#1-Java中对象和对象引用的区别" class="headerlink" title="1. Java中对象和对象引用的区别"></a><strong>1. Java中对象和对象引用的区别</strong></h3><p>先看一个例子 : </p>
@@ -415,7 +416,7 @@ releaseCompile &apos;com.squareup.leakcanary:leakcanary-android-no-op:1.5&apos;
       
         <div class="post-tags">
           
-            <a href="/tags/android/" rel="tag"># android</a>
+            <a href="/tags/android/" rel="tag"><i class="fa fa-tag"></i> android</a>
           
         </div>
       
@@ -585,7 +586,8 @@ releaseCompile &apos;com.squareup.leakcanary:leakcanary-android-no-op:1.5&apos;
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2017</span>
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2017</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
@@ -595,7 +597,14 @@ releaseCompile &apos;com.squareup.leakcanary:leakcanary-android-no-op:1.5&apos;
 </div>
 
 
-  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+<div class="powered-by">
+
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+  本站访客数:<span id="busuanzi_value_site_uv"></span>
+</span>
+</div>
+
+<!-- <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
 
 
 
@@ -604,6 +613,7 @@ releaseCompile &apos;com.squareup.leakcanary:leakcanary-android-no-op:1.5&apos;
 
 
   <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.3</div>
+-->
 
 
 
