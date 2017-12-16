@@ -308,99 +308,21 @@
       
         
           
-            <blockquote>
-<p>作者：fhyPayaso</p>
-</blockquote>
-<h3 id="1-Java中对象和对象引用的区别"><a href="#1-Java中对象和对象引用的区别" class="headerlink" title="1. Java中对象和对象引用的区别"></a><strong>1. Java中对象和对象引用的区别</strong></h3><p>先看一个例子 : </p>
-<pre><code>Person person;
-person = new Person(&quot;name&quot;);
-</code></pre><p>上面两行代码中，第一行person属于声明了一个Person类的引用，而第二行的new才是真正创建了一个对象。</p>
-<h3 id="2-Java中的内存环境"><a href="#2-Java中的内存环境" class="headerlink" title="2.Java中的内存环境"></a><strong>2.Java中的内存环境</strong></h3><p>Java在JVM所虚拟的内存环境中运行，内存可以分为三个部分：栈，堆，方法区</p>
-<ul>
-<li><p><strong>栈(stack)</strong><br>  每一个线程都拥有一个栈，在这里只保存基本数据类型和对象的引用(注意和对象的区别)，例如在方法中定义一个局部变量，就会在栈中给这个变量分配内存空间，超过该变量的作用域时，这部分内存就会被回收掉。</p>
-</li>
-<li><p><strong>堆(heap)</strong><br>  被所有进程所共享，只存放数组、对象以及对象的成员变量，不包括基本类型和引用，这部分内存空间由java中的垃圾回收机制自动管理。</p>
-</li>
-<li><p><strong>方法区(method)</strong><br>  又叫静态区，同样被所有进程所共享，存放class和static变量。</p>
-</li>
-</ul>
-<p>举个例子：</p>
-<pre><code>public class Person {
-
-    int age = 18;
-    Person personA = new Person();
-
-    public void method() {
-
-        int height = 180;
-        Person personB = new Person();
-
-    }
-}
-
-Person personC = new Person();
-</code></pre><p>在上面的例子中，height以及引用变量personB都属于局部变量，所以它们的内存应存放在栈中，在method方法之外的作用域，这部分内存就会被回收，而personB所指向的对象的内存存放在堆上。<br>引用变量personC所指向的对象同理也存放在堆上，当然也包括Person类的成员变量age和personA，但引用变量personC本身则是存放在栈中。</p>
-<h3 id="3-垃圾回收机制-GC"><a href="#3-垃圾回收机制-GC" class="headerlink" title="3.垃圾回收机制(GC)"></a><strong>3.垃圾回收机制(GC)</strong></h3><p>在Java中，内存的分配是由程序来完成的，而内存的回收则是由GC完成的，GC为了能正确的释放对象，必须监控每一个对象的运行状态，包括对象的申请、引用、赋值等。对象通过引用的方式来使用，而当一个对象没有任何引用的时候，称为<strong>不可到达对象</strong>，GC用于回收不可到达对象所占用的内存。</p>
-<h3 id="4-安卓中的内存泄露-Memory-Leak"><a href="#4-安卓中的内存泄露-Memory-Leak" class="headerlink" title="4.安卓中的内存泄露(Memory Leak)"></a><strong>4.安卓中的内存泄露(Memory Leak)</strong></h3><p>虽然java中有垃圾回收的机制，可以自动管理内存分配，但是仍有可能出现内存泄露的情况。Java作为Android的主要开发语言，当存在内存泄漏时，APP就会浪费大量内存，当内存不够时会导致频繁的内存回收，然而内存回收是十分耗时的操作，这样就会导致APP的卡顿，严重的可能会导致内存溢出，退出程序。</p>
-<ul>
-<li><p><strong>内存泄露的原因</strong><br>安卓中主要出现内存泄漏的原因本质上就是，一个对象已经不会再被使用，但其内存却没有被系统所回收，而无法被回收的原因一般是由于该对象被一个生命周期更长的对象所引用。</p>
-</li>
-<li><p><strong>如何知道程序中存在内存泄漏</strong><br>在开发的过程中，可能已经产生了内存泄露但却没有被注意到，这时候就需要用到LeakCanary，一款由Square公司生产的内存泄露检测库，简单使用方法如下：</p>
-<ul>
-<li><p>在build.gradle中添加：</p>
-<pre><code>debugCompile &apos;com.squareup.leakcanary:leakcanary-android:1.5&apos;
-releaseCompile &apos;com.squareup.leakcanary:leakcanary-android-no-op:1.5&apos;
-</code></pre></li>
-<li><p>在Application类添加</p>
-<pre><code>public class TestApplication extends Application {
-  @Override public void onCreate() {
-    super.onCreate();
-    LeakCanary.install(this);
-  }
-}
-</code></pre><p>这样当程序出现内存泄露的情况时，会在系统通知栏出现提醒，点击后可以查看详细的泄露信息。</p>
-</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li><p><strong>常见的内存泄漏</strong></p>
-<ul>
-<li><p>static关键字所导致的内存泄露</p>
-<p>  举个例子：</p>
-<pre><code>public  class MainActivity extends Activity{  
-
-    private static Context context;  
-
-    @Override  
-     protected void onCreate(Bundle savedInstanceState){  
-          super.onCreate(savedInstanceState);                   
-          setContentView(R,layout.main);
-
-          context = this;  
-    }  
-}
-</code></pre><p>  context为静态变量，生命周期较长，导致当前activity被销毁后无法被系统回收，产生内存泄漏。LeakCanary的详细泄露信息：</p>
-<p> <img src="https://ws1.sinaimg.cn/large/006yrKRely1fmgcyggl6qj30a60gumxj.jpg" alt=""></p>
-<p>  解决办法：在Activity的onDestroy方法里把静态变量设为null</p>
-<pre><code>protected void onDestroy() {  
-
-    super.onDestroy();  
-
-    if(context != null) {  
-        context = null;  
-    }  
-}
-</code></pre></li>
-</ul>
-</li>
-</ul>
-<p>本文先初步探究android中的内存泄露的基本原理，其他具体可能引起内存泄露的情景和解决方法会在后续文章中探讨。</p>
-<p>参考文章:</p>
-<p><a href="http://m.blog.csdn.net/lib739449500/article/details/78741263" target="_blank" rel="noopener">《Android 中内存泄漏的原因和解决方案》</a></p>
-<p><a href="https://www.douban.com/note/609777758/" target="_blank" rel="noopener">《Android常见内存泄露，学会这六招大大优化APP性能》</a></p>
-
           
+作者：fhyPayaso
+
+1. Java中对象和对象引用的区别先看一个例子 : 
+Person person;
+person = new Person(&quot;name&quot;);
+上面两行代码中，第一行person属于声明了一个Person类的引用，而第二行的new才是真正创建了一个对
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/12/16/初探android中内存泄漏/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -518,114 +440,18 @@ releaseCompile &apos;com.squareup.leakcanary:leakcanary-android-no-op:1.5&apos;
       
         
           
-            <p>###NetWork工具类<br>    isNetworkConnected       : 判断网络是否连接<br>    openNetSetting           : 打开网络设置界面<br>    getNetworkTypeName       : 获取网络类型名称<br>    getCurrentNetworkState   : 获取当前网络的状态<br>    getCurrentNetworkSubtype : 获取当前网络的具体类型<br>    isConnectedByState       : 判断当前网络是否已经连接<br>    isConnectingByState      : 判断当前网络是否正在连接<br>    isDisconnectedByState    : 判断当前网络是否已经断开<br>    isDisconnectingByState   : 判断当前网络是否正在断开</p>
-<p>###Fragment管理类 → FragmentUtils</p>
-<pre><code>addFragment              : 新增fragment
-addFragment              : 新增fragment
-hideAddFragment          : 先隐藏后新增fragment
-addFragments             : 新增多个fragment
-removeFragment           : 移除fragment
-removeToFragment         : 移除到指定fragment
-</code></pre><h3 id="ToastUtils（待定）"><a href="#ToastUtils（待定）" class="headerlink" title="ToastUtils（待定）"></a>ToastUtils（待定）</h3><pre><code>shortToast            : 自定义Toast调用
-longToast             : 自定义Toast调用
-cancelToast           : 取消显示Toast
-Toast                 : 默认Toast调用
-show                  : 屏幕中心位置短时间显示Toast。
-ToastShortBottomCenter: 屏幕底部中间位置显示短时间Toast
-</code></pre><h3 id="FileUtils-文件管理工具类"><a href="#FileUtils-文件管理工具类" class="headerlink" title="FileUtils  文件管理工具类"></a>FileUtils  文件管理工具类</h3><pre><code>rename             : 重命名文件\文件夹
-getFolderName      : 获取文件夹名称
-getFilesArray      : 获取文件夹下所有文件
-openImage          : 打开图片
-openVideo          : 打开视频
-openURL            : 打开URL
-</code></pre><h3 id="正则表达式工具类"><a href="#正则表达式工具类" class="headerlink" title="正则表达式工具类"></a>正则表达式工具类</h3><pre><code>phoneNoHide          : 手机号码，中间4位星号替换
-cardIdHide           : 银行卡号，保留最后4位，其他星号替换
-idHide               : 身份证号，中间10位星号替换
-checkVehicleNo       : 是否为车牌号（沪A88888）
-isContinuousNum      : 判断字符串是否为连续数字 45678901等
-isAlphaBetaString    : 是否是纯字母
-isContinuousWord     : 判断字符串是否为连续字母 xyZaBcd等
-isRealDate           : 是否是日期 20120506 共八位，前四位-年，中间两位-月，最后两位-日
-</code></pre><h3 id="时间工具类"><a href="#时间工具类" class="headerlink" title="时间工具类"></a>时间工具类</h3><pre><code>todayYyyyMmDd         : 当天的年月日
-todayHhMmSs           : 当天的时分秒
-todayYyyyMmDdHhMmSs   : 当天的年月日时分秒
-parseYyyy             : 获取年
-parseMm               : 获取月
-parseDd               : 获取日
-parseYyyyMmDd         : 获取年月日
-parseHhMmSs           : 时分秒
-getWeekNumber         : 获取星期几
-dateIsBefore          : 比较日期
-</code></pre><h3 id="字符串工具类"><a href="#字符串工具类" class="headerlink" title="字符串工具类"></a>字符串工具类</h3><pre><code>isEmpty(String str) 判断字符串是否为空或长度为0
-isBlank(String str) 判断字符串是否为空或长度为0 或由空格组成
-utf8Encode(String str) 以utf-8格式编码
-capitalizeFirstLetter(String str) 首字母大写
-</code></pre><h3 id="Json工具类"><a href="#Json工具类" class="headerlink" title="Json工具类"></a>Json工具类</h3><pre><code>list2json         : List集合转换为Json
-array2json        : 对象数组转换为Json
-set2json          : Set集合转为Json
-string2json       : 字符串转换为Json
-</code></pre><h3 id="缓存工具类"><a href="#缓存工具类" class="headerlink" title="缓存工具类"></a>缓存工具类</h3><pre><code>put             : 保存String数据到缓存中
-getAsString     : 读取String数据
-getAsJSONObject : 读取JSONObject数据
-getAsJSONArray  : 读取JSONArray数据
-getAsBinary     : 获取byte数据
-getAsObject     : 读取Serializable数据
-getAsBitmap     : 读取bitmap数据
-getAsDrawable   : 读取Drawable数据
-file            : 获取缓存文件
-remove          : 除某个key
-clear           : 清除所有数据
-</code></pre><h3 id="日志工具类"><a href="#日志工具类" class="headerlink" title="日志工具类"></a>日志工具类</h3><pre><code>init: 设置log总开关,debug模式(true:打印日志  false：不打印)
-a   : assert日志或者打印是否执行到这里等
-i   : Info日志或者打印是否执行到这里等
-d   : Debug日志或者打印是否执行到这里等
-w   : Warn日志或者打印是否执行到这里等
-v   : Verbose日志或者打印是否执行到这里等
-e   : Error日志或者打印是否执行到这里等
-json: 输出Json的格式字符串
-xml : 输出xml的格式字符串
-file: 保存到文件
-</code></pre><h3 id="屏幕辅助工具类"><a href="#屏幕辅助工具类" class="headerlink" title="屏幕辅助工具类"></a>屏幕辅助工具类</h3><pre><code>getScreenWidth           : 获得屏幕宽度
-getScreenHeight          : 获得屏幕高度
-getStatusHeight          : 获得状态栏的高度
-getRealScreenHeight      : 获取整块屏幕的高度
-getNavigationAreaHeight  : 获取虚拟按键区域的高度
-getNavigationBarrH       : 获取导航栏高度
-snapShotWithStatusBar    : 获取当前屏幕截图，包含状态栏
-snapShotWithoutStatusBar : 获取当前屏幕截图，不包含状态栏
-getTitleBarHeight        : 获得标题栏高度
-getStatusBarHeight       : 获取通知栏高度
-shoot                    : 截屏并保存
-takeScreenShot           : 获取指定Activity的截屏，保存到png文件
-dp2px/px2dp/sp2px        : sp、dp、px转换
-</code></pre><h3 id="AlertDialog工具类"><a href="#AlertDialog工具类" class="headerlink" title="AlertDialog工具类"></a>AlertDialog工具类</h3><h3 id="软键盘管理工具类"><a href="#软键盘管理工具类" class="headerlink" title="软键盘管理工具类"></a>软键盘管理工具类</h3><pre><code>openKeybord      : 打卡软键盘
-closeKeybord     : 关闭软键盘
-TimerHideKeyboard: 通过定时器强制隐藏虚拟键盘
-isKeybord        : 输入法是否显示
-hideInputMethod  : 隐藏输入法
-showInputMethod  : 显示输入法
-</code></pre><h3 id="App工具类"><a href="#App工具类" class="headerlink" title="App工具类"></a>App工具类</h3><pre><code>getSysClientOs             : 获得客户端操作系统名称
-getSysSdk                  : 获取当前操作系统的sdk版本
-getSysLanguage             : 获取当前操作系统的语言
-getSysModel                : 获取手机型号
-getSysRelease              : 获取操作系统的版本号
-</code></pre><h3 id="图片管理工具类（delete）"><a href="#图片管理工具类（delete）" class="headerlink" title="图片管理工具类（delete）"></a>图片管理工具类（delete）</h3><pre><code>instance                         : 单例对象
-LoadContextBitmap                : Glide请求图片，会受到Context生命周期控制
-LoadFragmentBitmap               : Glide请求图片，会受到Fragment生命周期控制
-LoadSupportv4FragmentBitmap      : Glide请求图片，会受到support.v4.app.Fragment生命周期控制
-LoadContextCircleBitmap          : 加载设置圆形图片
-</code></pre><h3 id="Glide图片加载工具类（delete）"><a href="#Glide图片加载工具类（delete）" class="headerlink" title="Glide图片加载工具类（delete）"></a>Glide图片加载工具类（delete）</h3><pre><code>instance                         : 单例对象
-LoadContextBitmap                : Glide请求图片，会受到Context生命周期控制
-LoadFragmentBitmap               : Glide请求图片，会受到Fragment生命周期控制
-LoadSupportv4FragmentBitmap      : Glide请求图片，会受到support.v4.app.Fragment生命周期控制
-LoadContextCircleBitmap          : 加载设置圆形图片
-</code></pre><h3 id="SharedPreferences封装类"><a href="#SharedPreferences封装类" class="headerlink" title="SharedPreferences封装类"></a>SharedPreferences封装类</h3><pre><code>put                        ：保存数据的方法，拿到数据保存数据的基本类型，然后根据类型调用不同的保存方法
-get                        ：获取保存数据的方法，我们根据默认值的到保存的数据的具体类型，然后调用相对于的方法获取值
-remove                    ：移除某个Key值
-clear                    ：清除所有数据
-contains                ：查询某个Key值是否存在
-</code></pre>
-          
+          NetWork工具类isNetworkConnected       : 判断网络是否连接
+openNetSetting           : 打开网络设置界面
+getNetworkTypeName       : 获取网络类型名称
+getCurrentNetworkState   : 获取当前网
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/12/16/android常用工具类/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -743,65 +569,32 @@ contains                ：查询某个Key值是否存在
       
         
           
-            <h2 id="基本操作"><a href="#基本操作" class="headerlink" title="基本操作"></a>基本操作</h2><ul>
-<li><p>在当前文件夹初始化本地仓库</p>
-<pre><code>$ git init
-</code></pre></li>
-<li><p>添加所有改动到缓冲区</p>
-<pre><code>$ git add .
-</code></pre></li>
-<li><p>将缓冲区的文件添加到本地仓库</p>
-<pre><code>$ git commit
-</code></pre></li>
-<li><p>查看仓库状态（未add显红，未commit显绿）</p>
-<pre><code>$ git status
-</code></pre></li>
-<li><p>查看commit记录</p>
-<pre><code>$ git log
-</code></pre></li>
-</ul>
-<h2 id="分支管理"><a href="#分支管理" class="headerlink" title="分支管理"></a>分支管理</h2><ul>
-<li><p>查看当前本地所有分支以及当前分支</p>
-<pre><code>$ git branch 
-</code></pre></li>
-<li><p>切换到指定分支</p>
-<pre><code>$ git checkout &lt;分支名&gt;
-</code></pre></li>
-<li><p>建立新的本地分支</p>
-<pre><code>$ git checkout -b &lt;分支名&gt;
-</code></pre></li>
-<li><p>拉取指定的远程分支到指定的本地分支</p>
-<pre><code>$ git pull origin &lt;远程分支名&gt;:&lt;本地分支名&gt; 
-</code></pre></li>
-<li><p>将指定分支与当前分支合并（如果出现冲突则手动决解，注意add和commit）</p>
-<pre><code>$ git merge &lt;分支名&gt;
-</code></pre></li>
-</ul>
-<h2 id="remote使用"><a href="#remote使用" class="headerlink" title="remote使用"></a>remote使用</h2><ul>
-<li><p>列出已经存在的远程分支</p>
-<pre><code>$ git remote
-</code></pre></li>
-<li><p>删除oringin</p>
-<pre><code>$ git remote rm oringin
-</code></pre></li>
-<li><p>给oringin添加远程仓库地址</p>
-<pre><code>$ git remote add origin &lt;url&gt;
-</code></pre></li>
-<li><p>增加oringin仓库地址</p>
-<pre><code>$ git remote set-url --add origin &lt;url&gt;
-</code></pre></li>
-<li><p>删除oringin仓库地址</p>
-<pre><code>$ git remote set-url --delete origin &lt;url&gt;
-</code></pre></li>
-<li><p>查看当前所有远程仓库的地址</p>
-<pre><code>$ git remote -v |--verbose
-</code></pre></li>
-<li><p>第一次pull失败的情况,添加</p>
-<pre><code>$ --allow-unrelated-histories
-</code></pre></li>
-</ul>
+          基本操作
+在当前文件夹初始化本地仓库
+$ git init
 
-          
+添加所有改动到缓冲区
+$ git add .
+
+将缓冲区的文件添加到本地仓库
+$ git commit
+
+查看仓库状态（未add显红，未commit显绿）
+$ git status
+
+查看commit记录
+$ git log
+
+
+分支管理
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/12/16/git的基本使用/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
