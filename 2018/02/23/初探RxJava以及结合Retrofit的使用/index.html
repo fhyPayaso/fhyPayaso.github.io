@@ -79,21 +79,21 @@
 
 
 
-<meta name="description" content="android当前最主流的网络请求框架莫过于RxJava2+Retrofit2+OkHttp3，之前的项目中也曾经使用过Retrofit进行网络请求，二次封装后使用非常方便。但为解决一些嵌套网络请求存在的问题，这次的新项目打算在网络请求中使用RxJava，体验一下响应式编程的感觉。 首先强力推荐扔物线的经典博客 给 Android 开发者的 RxJava 详解">
+<meta name="description" content="android当前最主流的网络请求框架莫过于RxJava2+Retrofit2+OkHttp3，之前的项目中也曾经使用过Retrofit进行网络请求，二次封装后使用非常方便。但为解决一些嵌套网络请求存在的问题，这次的新项目打算在网络请求中使用RxJava，体验一下响应式编程的感觉。">
 <meta name="keywords" content="Android">
 <meta property="og:type" content="article">
 <meta property="og:title" content="初探RxJava以及结合Retrofit的使用">
 <meta property="og:url" content="http://yoursite.com/2018/02/23/初探RxJava以及结合Retrofit的使用/index.html">
 <meta property="og:site_name" content="fhyPayaso的博客">
-<meta property="og:description" content="android当前最主流的网络请求框架莫过于RxJava2+Retrofit2+OkHttp3，之前的项目中也曾经使用过Retrofit进行网络请求，二次封装后使用非常方便。但为解决一些嵌套网络请求存在的问题，这次的新项目打算在网络请求中使用RxJava，体验一下响应式编程的感觉。 首先强力推荐扔物线的经典博客 给 Android 开发者的 RxJava 详解">
+<meta property="og:description" content="android当前最主流的网络请求框架莫过于RxJava2+Retrofit2+OkHttp3，之前的项目中也曾经使用过Retrofit进行网络请求，二次封装后使用非常方便。但为解决一些嵌套网络请求存在的问题，这次的新项目打算在网络请求中使用RxJava，体验一下响应式编程的感觉。">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://p0y1qzu73.bkt.clouddn.com/18-1-31/45904315.jpg">
 <meta property="og:image" content="http://p0y1qzu73.bkt.clouddn.com/18-1-31/80244718.jpg">
 <meta property="og:image" content="http://p0y1qzu73.bkt.clouddn.com/18-1-31/76343582.jpg">
-<meta property="og:updated_time" content="2018-02-23T14:17:10.000Z">
+<meta property="og:updated_time" content="2018-02-23T14:20:44.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="初探RxJava以及结合Retrofit的使用">
-<meta name="twitter:description" content="android当前最主流的网络请求框架莫过于RxJava2+Retrofit2+OkHttp3，之前的项目中也曾经使用过Retrofit进行网络请求，二次封装后使用非常方便。但为解决一些嵌套网络请求存在的问题，这次的新项目打算在网络请求中使用RxJava，体验一下响应式编程的感觉。 首先强力推荐扔物线的经典博客 给 Android 开发者的 RxJava 详解">
+<meta name="twitter:description" content="android当前最主流的网络请求框架莫过于RxJava2+Retrofit2+OkHttp3，之前的项目中也曾经使用过Retrofit进行网络请求，二次封装后使用非常方便。但为解决一些嵌套网络请求存在的问题，这次的新项目打算在网络请求中使用RxJava，体验一下响应式编程的感觉。">
 <meta name="twitter:image" content="http://p0y1qzu73.bkt.clouddn.com/18-1-31/45904315.jpg">
 
 
@@ -310,12 +310,8 @@
 
       
         <p>android当前最主流的网络请求框架莫过于<strong>RxJava2+Retrofit2+OkHttp3</strong>，之前的项目中也曾经使用过Retrofit进行网络请求，二次封装后使用非常方便。但为解决一些嵌套网络请求存在的问题，这次的新项目打算在网络请求中使用RxJava，体验一下响应式编程的感觉。</p>
-<p>首先强力推荐扔物线的经典博客 <a href="http://gank.io/post/560e15be2dca930e00da1083" target="_blank" rel="noopener">给 Android 开发者的 RxJava 详解</a></p>
 <a id="more"></a>
-<blockquote>
-<p>作者：不洗碗工作室–fhyPayaso</p>
-<p>转载请标明出处 </p>
-</blockquote>
+<p>首先强力推荐扔物线的经典博客 <a href="http://gank.io/post/560e15be2dca930e00da1083" target="_blank" rel="noopener">给 Android 开发者的 RxJava 详解</a></p>
 <h2 id="观察者模式"><a href="#观察者模式" class="headerlink" title="观察者模式"></a>观察者模式</h2><p>既然要使用RxJava，就不得不简单介绍一下观察者模式，因为RxJava作为一个工具库，使用的就是拓展形式的观察者模式。</p>
 <ul>
 <li><p>观察者模式：简单来说，观察者模式就是一个对象A <strong>(观察者)</strong> 和一个对象B <strong>(被观察者)</strong> 达成了一种 <strong>订阅</strong> 关系，当对象B触发了某个事件时，比如一些数据的变化，就会立刻通知对象A，对象A接到通知后作出反应。这样做的好处就是对象A不用实时监控对象B的状态，只需在对象B发生特定事件时再作出响应即可。</p>
@@ -951,7 +947,7 @@ private void login() {
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共11.6k字</span>
+  <span class="post-count">博客全站共11.5k字</span>
 </div>
 
         
