@@ -88,7 +88,7 @@
 <meta property="og:description" content="在一些小项目的开发过程中，需求里可能会有实现聊天功能的要求，完全由后端实现可能会比较繁琐，这里我们选择通过集成环信SDK来实现简单的聊天功能。">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://p0y1qzu73.bkt.clouddn.com/18-1-15/73472058.jpg">
-<meta property="og:updated_time" content="2018-01-15T07:13:10.000Z">
+<meta property="og:updated_time" content="2018-01-21T12:44:43.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="基于环信Sdk的简单即时聊天">
 <meta name="twitter:description" content="在一些小项目的开发过程中，需求里可能会有实现聊天功能的要求，完全由后端实现可能会比较繁琐，这里我们选择通过集成环信SDK来实现简单的聊天功能。">
@@ -551,9 +551,7 @@ List&lt;EMMessage&gt; messages = conversation.getAllMessages();
 <pre><code>EMTextMessageBody textMessageBody = (EMTextMessageBody) emMessage.getBody();
 txtMessage.setText(textMessageBody.getMessage());
 </code></pre><p>SDK默认加载的聊天记录最多为20条，可以在初始化SDK时进行设置<code>options.setNumberOfMessagesLoaded(number)</code></p>
-<h2 id="七、Demo展示"><a href="#七、Demo展示" class="headerlink" title="七、Demo展示"></a>七、Demo展示</h2><div align="center"><br><img src="http://p0y1qzu73.bkt.clouddn.com/18-1-15/73472058.jpg" width="60%"><br></div>
-
-
+<h2 id="七、Demo展示"><a href="#七、Demo展示" class="headerlink" title="七、Demo展示"></a>七、Demo展示</h2><p><img src="http://p0y1qzu73.bkt.clouddn.com/18-1-15/73472058.jpg" alt=""></p>
 <p>本文只简单介绍了实现文字即时聊天的方法，SDK更多的功能请见<a href="http://docs.easemob.com/im/200androidclientintegration/10androidsdkimport" target="_blank" rel="noopener">环信开发文档</a></p>
 
       
@@ -594,6 +592,10 @@ txtMessage.setText(textMessageBody.getMessage());
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/02/23/初探RxJava以及结合Retrofit的使用/" rel="prev" title="初探RxJava以及结合Retrofit的使用">
+                初探RxJava以及结合Retrofit的使用 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -674,7 +676,7 @@ txtMessage.setText(textMessageBody.getMessage());
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-count">7</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -687,7 +689,7 @@ txtMessage.setText(textMessageBody.getMessage());
               
               <div class="site-state-item site-state-tags">
                 
-                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-count">4</span>
                   <span class="site-state-item-name">标签</span>
                 
               </div>
@@ -775,7 +777,7 @@ txtMessage.setText(textMessageBody.getMessage());
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共8.1k字</span>
+  <span class="post-count">博客全站共11.6k字</span>
 </div>
 
         

@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/mynameise_32px.ico?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/mynameise_16px.ico?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Android," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="android当前最主流的网络请求框架莫过于RxJava2+Retrofit2+OkHttp3，之前的项目中也曾经使用过Retrofit进行网络请求，二次封装后使用非常方便。但为解决一些嵌套网络请求存在的问题，这次的新项目打算在网络请求中使用RxJava，体验一下响应式编程的感觉。 首先强力推荐扔物线的经典博客 给 Android 开发者的 RxJava 详解">
+<meta name="keywords" content="Android">
+<meta property="og:type" content="article">
+<meta property="og:title" content="初探RxJava以及结合Retrofit的使用">
+<meta property="og:url" content="http://yoursite.com/2018/02/23/初探RxJava以及结合Retrofit的使用/index.html">
+<meta property="og:site_name" content="fhyPayaso的博客">
+<meta property="og:description" content="android当前最主流的网络请求框架莫过于RxJava2+Retrofit2+OkHttp3，之前的项目中也曾经使用过Retrofit进行网络请求，二次封装后使用非常方便。但为解决一些嵌套网络请求存在的问题，这次的新项目打算在网络请求中使用RxJava，体验一下响应式编程的感觉。 首先强力推荐扔物线的经典博客 给 Android 开发者的 RxJava 详解">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://p0y1qzu73.bkt.clouddn.com/18-1-31/45904315.jpg">
+<meta property="og:image" content="http://p0y1qzu73.bkt.clouddn.com/18-1-31/80244718.jpg">
+<meta property="og:image" content="http://p0y1qzu73.bkt.clouddn.com/18-1-31/76343582.jpg">
+<meta property="og:updated_time" content="2018-02-23T14:17:10.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="初探RxJava以及结合Retrofit的使用">
+<meta name="twitter:description" content="android当前最主流的网络请求框架莫过于RxJava2+Retrofit2+OkHttp3，之前的项目中也曾经使用过Retrofit进行网络请求，二次封装后使用非常方便。但为解决一些嵌套网络请求存在的问题，这次的新项目打算在网络请求中使用RxJava，体验一下响应式编程的感觉。 首先强力推荐扔物线的经典博客 给 Android 开发者的 RxJava 详解">
+<meta name="twitter:image" content="http://p0y1qzu73.bkt.clouddn.com/18-1-31/45904315.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/02/23/初探RxJava以及结合Retrofit的使用/"/>
+
+
+
+
+
+  <title>初探RxJava以及结合Retrofit的使用 | fhyPayaso的博客</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+
+<script type="text/javascript" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+<a href="https://github.com/fhyPayaso" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">fhyPayaso的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">斜眼笑看世界</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/02/23/初探RxJava以及结合Retrofit的使用/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="fhyPayaso">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="fhyPayaso的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">初探RxJava以及结合Retrofit的使用</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-23T21:56:45+08:00">
+                2018-02-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>android当前最主流的网络请求框架莫过于<strong>RxJava2+Retrofit2+OkHttp3</strong>，之前的项目中也曾经使用过Retrofit进行网络请求，二次封装后使用非常方便。但为解决一些嵌套网络请求存在的问题，这次的新项目打算在网络请求中使用RxJava，体验一下响应式编程的感觉。</p>
+<p>首先强力推荐扔物线的经典博客 <a href="http://gank.io/post/560e15be2dca930e00da1083" target="_blank" rel="noopener">给 Android 开发者的 RxJava 详解</a></p>
+<a id="more"></a>
+<blockquote>
+<p>作者：不洗碗工作室–fhyPayaso</p>
+<p>转载请标明出处 </p>
+</blockquote>
+<h2 id="观察者模式"><a href="#观察者模式" class="headerlink" title="观察者模式"></a>观察者模式</h2><p>既然要使用RxJava，就不得不简单介绍一下观察者模式，因为RxJava作为一个工具库，使用的就是拓展形式的观察者模式。</p>
+<ul>
+<li><p>观察者模式：简单来说，观察者模式就是一个对象A <strong>(观察者)</strong> 和一个对象B <strong>(被观察者)</strong> 达成了一种 <strong>订阅</strong> 关系，当对象B触发了某个事件时，比如一些数据的变化，就会立刻通知对象A，对象A接到通知后作出反应。这样做的好处就是对象A不用实时监控对象B的状态，只需在对象B发生特定事件时再作出响应即可。</p>
+</li>
+<li><p>Android中的观察者模式：举一个在开发中最常见的观察者模式的例子<code>OnClickListener</code></p>
+</li>
+</ul>
+<pre><code>button.setOnClickListener(new View.OnClickListener() {
+     @Override
+    public void onClick(View v) {
+       //点击事件发生后的操作
+   }
+});   
+</code></pre><p>在这个例子中<code>button</code>是被观察者,<code>View.OnClickListener</code>是观察者，而<code>setOnClickListener()</code>方法即让二者达成了一种订阅关系，这样的效果就是：当<code>button</code>触发了被点击的事件后，会通知观察者,而<code>OnClickListener</code>接收到通知后，就会调用自身接口中的<code>onClick()</code>作为对点击事件的响应。</p>
+<h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>首先我们来看一下官方在github上对RxJava的介绍：</p>
+<blockquote>
+<p>RxJava is a Java VM implementation of Reactive Extensions: a library for composing asynchronous and<br>event-based programs by using observable sequences.(一个通过使用可观察序列来组成异步的、基于事件的程序的库。)</p>
+</blockquote>
+<p>从介绍中我们可以提取出一个关键词：<strong>异步</strong>,但安卓中已经有很多解决异步操作的方法了，比如<code>Handler</code>和<code>AsyncTask</code>等,为什么还选择RxJava呢，其实目的就是为了让代码更简洁，而且它的简洁是与众不同的，因为RxJava的使用方式是<strong>基于事件流的链式调用</strong>，这就保证了<strong>随着程序复杂性的提高，RxJava依然能保持代码的简洁和优雅</strong>。具体的例子将在后面结合Retrofit展示。</p>
+<p>因为RxJava是基于一种拓展的观察者模式，所以也有<strong>观察者、被观察者、订阅、事件</strong>几个基本概念,这里借用大神<a href="http://blog.csdn.net/carson_ho/article/details/78179340" target="_blank" rel="noopener">Carson_Ho</a>博客中的例子解释一下概念和基本原理。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">角色</th>
+<th style="text-align:left">作用</th>
+<th style="text-align:left">类比</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Observable(被观察者)</td>
+<td style="text-align:left">事件的产生者</td>
+<td style="text-align:left">顾客</td>
+</tr>
+<tr>
+<td style="text-align:left">Observer(观察者)</td>
+<td style="text-align:left">事件消费者，接收事件后作出响应</td>
+<td style="text-align:left">厨师</td>
+</tr>
+<tr>
+<td style="text-align:left">Subscribe(订阅)</td>
+<td style="text-align:left">将Observable和Observer连接在一起</td>
+<td style="text-align:left">服务员</td>
+</tr>
+<tr>
+<td style="text-align:left">Event(事件)</td>
+<td style="text-align:left">Observable通知Observer的载体</td>
+<td style="text-align:left">菜品</td>
+</tr>
+</tbody>
+</table>
+<p><img src="http://p0y1qzu73.bkt.clouddn.com/18-1-31/45904315.jpg" alt=""></p>
+<h2 id="基本实现"><a href="#基本实现" class="headerlink" title="基本实现"></a>基本实现</h2><ul>
+<li><p>依赖添加：开始实践之前记得在<code>gradle</code>中添加依赖(本文发布时的RxJava2.0的最新版本)。</p>
+<pre><code>compile &quot;io.reactivex.rxjava2:rxjava:2.1.1&quot;
+compile &apos;io.reactivex.rxjava2:rxandroid:2.0.1&apos;
+</code></pre></li>
+<li><p><strong>Observable(被观察者)</strong>的创建：</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Observable&lt;String&gt; observable = Observable.create(new ObservableOnSubscribe&lt;String&gt;() &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void subscribe(ObservableEmitter&lt;String&gt; e) throws Exception &#123;</span><br><span class="line"></span><br><span class="line">        e.onNext(&quot;事件1&quot;);</span><br><span class="line">        e.onNext(&quot;事件2&quot;);</span><br><span class="line">        e.onNext(&quot;事件3&quot;);</span><br><span class="line">        e.onComplete();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>Observable.create()</code>: 创建一个Observable的最基本方法，也可以通过<code>just()</code>、<code>from()</code>等方法来简化操作。</li>
+<li><code>ObservableOnSubscribe&lt;&gt;()</code>: 一个接口，在复写的subscribe（）里定义需要发送的事件。</li>
+<li><code>ObservableEmitter</code>: 这是RxJava2中新推出的类，可以理解为发射器，用于发射数据<code>onNext()</code>和通知<code>onComplete()/onError()</code>。</li>
+</ul>
+</li>
+<li><p><strong>Observer(观察者)</strong>的创建：</p>
+<pre><code>Observer&lt;String&gt; observer = new Observer&lt;String&gt;() {
+
+    @Override
+    public void onSubscribe(Disposable d) {
+
+        Log.d(TAG, &quot;onSubscribe: 达成订阅&quot;);
+    }
+
+    @Override
+    public void onNext(String s) {
+
+        Log.d(TAG, &quot;onNext: 响应了&quot;+s);
+    }
+
+    @Override
+    public void onError(Throwable e) {
+
+        Log.d(TAG, &quot;onError: 执行错误&quot;);
+    }
+
+    @Override
+    public void onComplete() {
+
+        Log.d(TAG, &quot;onComplete: 执行完成&quot;);
+    }
+};
+</code></pre><ul>
+<li><code>onNext()</code>:普通事件，通过重写进行响应即可。</li>
+<li><code>onError()</code>:错误事件，当队列中事件处理出现异常时，就会调用该方法，此后不再有事件发出。</li>
+<li><code>onComplete()</code>:完成事件，当队列中的事件全部处理完成后触发。</li>
+<li>在一个正常的序列中，<code>onError()</code>和<code>onComplete()</code>应该只有一个并且处于事件队列的末尾，而且调用了一个就不应该再调用另一个。</li>
+</ul>
+<p>除了<code>Observer</code>之外，RxJava 还内置了一个实现了<code>Observer</code>的抽象类：<code>Subscriber</code>,两者的使用方式基本一样，主要区别在于<code>Subscriber</code>中新增了两个方法，下面引用一下扔物线对这两个方法的解释：</p>
+</li>
+</ul>
+<blockquote>
+<p>1、onStart(): 这是 Subscriber 增加的方法。它会在 subscribe 刚开始，而事件还未发送之前被调用，可以用于做一些准备工作，例如数据的清零或重置。这是一个可选方法，默认情况下它的实现为空。需要注意的是，如果对准备工作的线程有要求（例如弹出一个显示进度的对话框，这必须在主线程执行）， onStart() 就不适用了，因为它总是在 subscribe 所发生的线程被调用，而不能指定线程。要在指定的线程来做准备工作，可以使用 doOnSubscribe() 方法。</p>
+<p>2、unsubscribe(): 这是 Subscriber 所实现的另一个接口 Subscription 的方法，用于取消订阅。在这个方法被调用后，Subscriber 将不再接收事件。一般在这个方法调用前，可以使用 isUnsubscribed() 先判断一下状态。 unsubscribe() 这个方法很重要，因为在 subscribe() 之后， Observable 会持有 Subscriber 的引用，这个引用如果不能及时被释放，将有内存泄露的风险。所以最好保持一个原则：要在不再使用的时候尽快在合适的地方（例如 onPause() onStop() 等方法中）调用 unsubscribe() 来解除引用关系，以避免内存泄露的发生。</p>
+</blockquote>
+<ul>
+<li><p>二者达成<strong>subscribe(订阅)</strong>关系：</p>
+<pre><code>observable.subscribe(observer);
+</code></pre></li>
+<li><p>链式调用</p>
+<p>  上面的三步过程可以通过一条链式结构直接调用，使得代码变得更简洁。</p>
+<pre><code>Observable.create(new ObservableOnSubscribe&lt;String&gt;() {
+    @Override
+    public void subscribe(ObservableEmitter&lt;String&gt; e) throws Exception {
+
+        e.onNext(&quot;事件1&quot;);
+        e.onNext(&quot;事件2&quot;);
+        e.onNext(&quot;事件3&quot;);
+        e.onComplete();
+    }
+}).subscribe(new Observer&lt;String&gt;() {
+    @Override
+    public void onSubscribe(Disposable d) {
+
+        Log.d(TAG, &quot;onSubscribe: 达成订阅&quot;);
+    }
+
+    @Override
+    public void onNext(String s) {
+
+        Log.d(TAG, &quot;onNext: 响应了&quot;+s);
+    }
+
+    @Override
+    public void onError(Throwable e) {
+
+        Log.d(TAG, &quot;onError: 执行错误&quot;);
+    }
+
+    @Override
+    public void onComplete() {
+
+        Log.d(TAG, &quot;onComplete: 执行完成&quot;);
+    }
+});
+</code></pre></li>
+</ul>
+<p>   在logcat中可以查看打印结果<br>   <img src="http://p0y1qzu73.bkt.clouddn.com/18-1-31/80244718.jpg" alt=""></p>
+<h2 id="线程调度"><a href="#线程调度" class="headerlink" title="线程调度"></a>线程调度</h2><p>在RxJava中，我们可以自行指定事件产生和事件消费的线程，可以通过RxJava中的<code>Scheduler</code>来实现。</p>
+<h3 id="Scheduler"><a href="#Scheduler" class="headerlink" title="Scheduler"></a>Scheduler</h3><ul>
+<li><p>RxJava内置的5个Scheduler</p>
+<ul>
+<li><p><code>Schedulers.immediate()</code>: 直接在当前线程运行，相当于不指定线程。这是默认的 Scheduler，但是为了防止被错误使用，在RxJava2中已经被移除了。</p>
+</li>
+<li><p><code>Schedulers.newThread()</code>: 开启新线程，并在新线程执行操作。</p>
+</li>
+<li><p><code>Schedulers.io()</code>: I/O 操作（读写文件、读写数据库、网络信息交互等）所使用的 Scheduler。行为模式和 newThread() 差不多，区别在于 io() 的内部实现是是用一个无数量上限的线程池，可以重用空闲的线程，因此多数情况下 io() 比 newThread() 更有效率。不要把计算工作放在 io() 中，可以避免创建不必要的线程。</p>
+</li>
+<li><p><code>Schedulers.computation()</code>: 计算所使用的 Scheduler，例如图形的计算。这个 Scheduler 使用的固定的线程池，大小为 CPU 核数。不要把 I/O 操作放在 computation() 中，否则 I/O 操作的等待时间会浪费 CPU。</p>
+</li>
+<li><p><code>Schedulers.trampoline()</code>:主要用于延迟工作任务的执行。当我们想在当前线程执行一个任务时，但并不是立即，我们可以用<code>.trampoline()</code>将它入队，trampoline将会处理它的队列并且按序运行队列中每一个任务。</p>
+</li>
+</ul>
+</li>
+<li><p>Android特有的Scheduler</p>
+<ul>
+<li><code>AndroidSchedulers.mainThread()</code>:指定的操作将在Android的主线程中进行，如UI界面的更新操作。    </li>
+</ul>
+</li>
+</ul>
+<h3 id="线程的控制"><a href="#线程的控制" class="headerlink" title="线程的控制"></a>线程的控制</h3><ul>
+<li><code>subscribeOn()</code>:指定事件产生的线程，例如<code>subscribeOn(Schedulers.io())</code>可以指定被观察者的网络请求、文件读写等操作放置在io线程。</li>
+<li><code>observeOn()</code>:指定事件消费的线程，例如<code>observeOn(AndroidSchedulers.mainThread())</code>指定<code>Subscriber</code>中的方法在主线程中运行。</li>
+</ul>
+<p>在<code>subscribe()</code>之前写上两句<code>subscribeOn(Scheduler.io())</code>和<code>observeOn(AndroidSchedulers.mainThread())</code>的使用方式非常常见，它适用于多数的<strong>&lt;后台线程取数据，主线程显示&gt;</strong>的程序策略。        </p>
+<h2 id="结合Retrofit"><a href="#结合Retrofit" class="headerlink" title="结合Retrofit"></a>结合Retrofit</h2><p>在很多时候RxJava都会结合Retrofit一起使用，而且随着程序的复杂度提高，RxJava简洁的优越性就会渐渐得到体现。下面就举几个例子来具体感受一下RxJava操作符的神奇。</p>
+<h4 id="1、单独使用Retrofit"><a href="#1、单独使用Retrofit" class="headerlink" title="1、单独使用Retrofit"></a>1、单独使用Retrofit</h4><ul>
+<li><p>首先创建Service接口，这里拿一个登录接口来举例</p>
+<pre><code>public interface LoginService {
+
+    @POST(&quot;login&quot;)
+    Call&lt;ApiResponse&gt; login(@Query(&quot;phone&quot;) String username, @Query(&quot;password&quot;) String password);
+}
+</code></pre><p>  其中<code>ApiResponse</code>是自己定义的统一格式的返回体</p>
+</li>
+<li><p>构造Retrofit并发送请求</p>
+<pre><code>public void login() {
+
+    Retrofit retrofit = new Retrofit.Builder()
+            .addConverterFactory(GsonConverterFactory.create())
+            .baseUrl(Config.APP_SERVER_BASE_URL)
+            .build();
+
+    retrofit.create(LoginService.class)
+            .login(phone,password)
+            .enqueue(new Callback&lt;ApiResponse&gt;() {
+                @Override
+                public void onResponse(Call&lt;ApiResponse&gt; call, Response&lt;ApiResponse&gt; response) {
+
+                    //登录成功后的操作
+                }
+
+                @Override
+                public void onFailure(Call&lt;ApiResponse&gt; call, Throwable t) {
+
+                    //登录失败后的操作
+                }
+            });
+}        
+</code></pre></li>
+</ul>
+<h4 id="2、结合RxJava"><a href="#2、结合RxJava" class="headerlink" title="2、结合RxJava"></a>2、结合RxJava</h4><ul>
+<li><p>引入依赖：记得给Retrofit添加对RxJava的适配</p>
+<pre><code>compile &apos;com.squareup.retrofit2:adapter-rxjava2:2.3.0&apos;
+</code></pre></li>
+<li><p>创建Service接口</p>
+<pre><code>public interface LoginService {
+
+    @POST(&quot;login&quot;)
+    Observable&lt;ApiResponse&gt; rxLogin(@Query(&quot;phone&quot;) String phone, @Query(&quot;password&quot;) String password);
+}
+</code></pre></li>
+<li><p>构造Retrofit并发送请求</p>
+<pre><code>public void rxLogin() {
+
+    Retrofit retrofit = new Retrofit.Builder()
+            .addConverterFactory(GsonConverterFactory.create())
+            //添加对RxJava的支持
+            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+            .baseUrl(Config.APP_SERVER_BASE_URL)
+            .build();
+
+    retrofit.create(LoginService.class)
+            .rxLogin(phone,password)
+            .subscribeOn(Schedulers.io()) //io线程获取网络请求
+            .observeOn(AndroidSchedulers.mainThread()) //主线程进行数据更新
+            .subscribe(new Observer&lt;ApiResponse&gt;() {
+                @Override
+                public void onSubscribe(Disposable d) {
+
+                }
+
+                @Override
+                public void onNext(ApiResponse apiResponse) {
+
+                    //登录成功后的操作
+                }
+
+                @Override
+                public void onError(Throwable e) {
+
+                    //登录失败后的操作
+                }
+
+                @Override
+                public void onComplete() {
+
+                }
+            });
+
+}
+</code></pre></li>
+</ul>
+<p>可能大家看了之后会感觉并没有什么卵用，不但没有简洁，反而增加了代码，但老哥们别着急，这只是最简单的情况，随着情况变得复杂，你就会感受到RxJava的强大之处。</p>
+<h4 id="3、flatMap-解决嵌套请求"><a href="#3、flatMap-解决嵌套请求" class="headerlink" title="3、flatMap()解决嵌套请求"></a>3、flatMap()解决嵌套请求</h4><p>平时在网络请求的过程中，可能会出现这样的情况，注册成功之后直接调用登录接口，如果不用RxJava，正常的想法肯定是在retrofit的onResponse回调里再嵌套一层网络请求，就像这样：</p>
+<pre><code>//注册相关方法
+private void register() {
+
+    retrofit.create(RetrofitService.class)
+            .register(phone,password)
+            .enqueue(new Callback&lt;ApiResponse&gt;() {
+                @Override
+                public void onResponse(Call&lt;ApiResponse&gt; call, Response&lt;ApiResponse&gt; response) {
+
+                    Log.d(TAG, &quot;onResponse: 注册成功&quot;);
+                    //注册成功开始登录请求
+                    login();
+                }
+
+                @Override
+                public void onFailure(Call&lt;ApiResponse&gt; call, Throwable t) {
+                    Log.d(TAG, &quot;onFailure: 注册失败&quot;);
+                }
+            });
+
+
+}
+
+//登录相关方法
+private void login() {
+
+    retrofit.create(RetrofitService.class)
+            .login(phone,password)
+            .enqueue(new Callback&lt;ApiResponse&gt;() {
+                @Override
+                public void onResponse(Call&lt;ApiResponse&gt; call, Response&lt;ApiResponse&gt; response) {
+
+                    Log.d(TAG, &quot;onResponse: 登录成功&quot;);
+                }
+
+                @Override
+                public void onFailure(Call&lt;ApiResponse&gt; call, Throwable t) {
+
+                    Log.d(TAG, &quot;onFailure: 登录失败&quot;);
+                }
+            });
+}
+</code></pre><p>实际上这种很low的嵌套网络请求正是我们需要避免的，而在RxJava中，通过flatMap()操作符可以避免这种嵌套，flatMap的作用是对传入的上一个数据流中的对象进行处理，返回下一级所要的对象的Observable包装，相当于将二维的嵌套过程线性化了，先举个最原始的例子：</p>
+<pre><code>private void loginAndRegister() {
+
+
+    //获得被观察者实体
+    RetrofitService service = retrofit.create(RetrofitService.class);
+    Observable&lt;ApiResponse&gt; register = service.register(phone, password);
+    final Observable&lt;ApiResponse&gt; login = service.login(phone, password);
+
+
+    register.subscribeOn(Schedulers.io()) //(注册被观察者)切换到IO线程进行注册网络请求
+            .observeOn(AndroidSchedulers.mainThread()) //(注册观察者)切换到主线程 处理注册网络请求的结果
+            .doOnEach(new Observer&lt;ApiResponse&gt;() {
+                @Override
+                public void onSubscribe(Disposable d) {
+
+                }
+
+                @Override
+                public void onNext(ApiResponse apiResponse) {
+
+                    // 对第注册成功网络请求返回的结果进行操作
+                    Log.d(TAG, &quot;注册成功&quot;);
+                }
+
+                @Override
+                public void onError(Throwable e) {
+
+                }
+
+                @Override
+                public void onComplete() {
+
+                }
+            })
+            //切换到IO线程去发起登录网络请求(登录被观察者经过flatMap变换后也变成了相对于注册的观察者，所以用observeOn切换线程)
+            .observeOn(Schedulers.io()) 
+            .flatMap(new Function&lt;ApiResponse, ObservableSource&lt;ApiResponse&gt;&gt;() {
+                @Override
+                public ObservableSource&lt;ApiResponse&gt; apply(ApiResponse apiResponse) throws Exception {
+                    return login;
+                }
+            })
+            //(登录观察者)切回主线程处理回调
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(new Observer&lt;ApiResponse&gt;() {
+                @Override
+                public void onSubscribe(Disposable d) {
+
+                }
+
+                @Override
+                public void onNext(ApiResponse apiResponse) {
+
+                    Log.d(TAG, &quot;onNext: 登录成功&quot;);
+                }
+
+                @Override
+                public void onError(Throwable e) {
+
+                }
+
+                @Override
+                public void onComplete() {
+
+                }
+            });
+}
+</code></pre><p>可能有的老哥觉得，这样写虽然采用了链式调用，没有了嵌套，但是这代码也太长了，而且重写了很多无用的方法，别着急，下面来个优雅版的</p>
+<pre><code>private void loginAndRegister() {
+
+    final RetrofitService service = retrofit.create(RetrofitService.class);
+
+    service.register(phone, password)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnNext(new Consumer&lt;ApiResponse&gt;() {
+                @Override
+                public void accept(ApiResponse apiResponse) throws Exception {
+
+                    Log.d(TAG, &quot;注册成功&quot;);
+                }
+            })
+            .observeOn(Schedulers.io())
+            .flatMap(new Function&lt;ApiResponse, ObservableSource&lt;ApiResponse&gt;&gt;() {
+                @Override
+                public ObservableSource&lt;ApiResponse&gt; apply(ApiResponse apiResponse) throws Exception {
+                    return service.login(phone, password);
+                }
+            })
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(new Consumer&lt;ApiResponse&gt;() {
+                @Override
+                public void accept(ApiResponse apiResponse) throws Exception {
+
+                    Log.d(TAG, &quot;登录成功&quot;);
+                }
+            });
+}
+</code></pre><p>  Consumer是简易版的Observer，他有多重重载，可以自定义你需要处理的信息，这里调用的是只接受onNext消息的方法，他只提供一个回调接口accept，由于没有onError和onCompete，无法在接受到onError或者onCompete之后，实现函数回调，虽然无法回调，但不代表不接收，他还是会接收到onCompete和onError之后做出默认操作，这里我还是建议大家自己对Observer再进行一下封装，使用起来会更方便。</p>
+<p>在logcat中可以看到请求成功的打印的日志<br><img src="http://p0y1qzu73.bkt.clouddn.com/18-1-31/76343582.jpg" alt=""></p>
+<h3 id="参考文章："><a href="#参考文章：" class="headerlink" title="参考文章："></a>参考文章：</h3><ul>
+<li><a href="http://gank.io/post/560e15be2dca930e00da1083" target="_blank" rel="noopener">给 Android 开发者的 RxJava 详解</a></li>
+<li><a href="https://www.daidingkang.cc/2017/05/19/Rxjava/" target="_blank" rel="noopener">RxJava 从入门到放弃再到不离不弃</a></li>
+<li><a href="https://www.jianshu.com/p/1fb294ec7e3b" target="_blank" rel="noopener">RxJava + Retrofit完成网络请求</a></li>
+<li><a href="http://blog.csdn.net/carson_ho/article/details/78179340" target="_blank" rel="noopener">手把手带你入门神秘的 Rxjava</a></li>
+<li><a href="http://blog.csdn.net/carson_ho/article/details/78315696" target="_blank" rel="noopener">优雅实现 网络请求嵌套回调</a></li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"><i class="fa fa-tag"></i> Android</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/01/15/基于环信sdk的简单即时聊天/" rel="next" title="基于环信Sdk的简单即时聊天">
+                <i class="fa fa-chevron-left"></i> 基于环信Sdk的简单即时聊天
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="fhyPayaso" />
+            
+              <p class="site-author-name" itemprop="name">fhyPayaso</p>
+              <p class="site-description motion-element" itemprop="description">要七饼吗，不七渲惹</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">标签</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#观察者模式"><span class="nav-number">1.</span> <span class="nav-text"><a href="#&#x89C2;&#x5BDF;&#x8005;&#x6A21;&#x5F0F;" class="headerlink" title="&#x89C2;&#x5BDF;&#x8005;&#x6A21;&#x5F0F;"></a>&#x89C2;&#x5BDF;&#x8005;&#x6A21;&#x5F0F;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#介绍"><span class="nav-number">2.</span> <span class="nav-text"><a href="#&#x4ECB;&#x7ECD;" class="headerlink" title="&#x4ECB;&#x7ECD;"></a>&#x4ECB;&#x7ECD;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基本实现"><span class="nav-number">3.</span> <span class="nav-text"><a href="#&#x57FA;&#x672C;&#x5B9E;&#x73B0;" class="headerlink" title="&#x57FA;&#x672C;&#x5B9E;&#x73B0;"></a>&#x57FA;&#x672C;&#x5B9E;&#x73B0;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#线程调度"><span class="nav-number">4.</span> <span class="nav-text"><a href="#&#x7EBF;&#x7A0B;&#x8C03;&#x5EA6;" class="headerlink" title="&#x7EBF;&#x7A0B;&#x8C03;&#x5EA6;"></a>&#x7EBF;&#x7A0B;&#x8C03;&#x5EA6;</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Scheduler"><span class="nav-number">4.1.</span> <span class="nav-text"><a href="#Scheduler" class="headerlink" title="Scheduler"></a>Scheduler</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#线程的控制"><span class="nav-number">4.2.</span> <span class="nav-text"><a href="#&#x7EBF;&#x7A0B;&#x7684;&#x63A7;&#x5236;" class="headerlink" title="&#x7EBF;&#x7A0B;&#x7684;&#x63A7;&#x5236;"></a>&#x7EBF;&#x7A0B;&#x7684;&#x63A7;&#x5236;</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结合Retrofit"><span class="nav-number">5.</span> <span class="nav-text"><a href="#&#x7ED3;&#x5408;Retrofit" class="headerlink" title="&#x7ED3;&#x5408;Retrofit"></a>&#x7ED3;&#x5408;Retrofit</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1、单独使用Retrofit"><span class="nav-number">5.0.1.</span> <span class="nav-text"><a href="#1&#x3001;&#x5355;&#x72EC;&#x4F7F;&#x7528;Retrofit" class="headerlink" title="1&#x3001;&#x5355;&#x72EC;&#x4F7F;&#x7528;Retrofit"></a>1&#x3001;&#x5355;&#x72EC;&#x4F7F;&#x7528;Retrofit</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2、结合RxJava"><span class="nav-number">5.0.2.</span> <span class="nav-text"><a href="#2&#x3001;&#x7ED3;&#x5408;RxJava" class="headerlink" title="2&#x3001;&#x7ED3;&#x5408;RxJava"></a>2&#x3001;&#x7ED3;&#x5408;RxJava</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3、flatMap-解决嵌套请求"><span class="nav-number">5.0.3.</span> <span class="nav-text"><a href="#3&#x3001;flatMap-&#x89E3;&#x51B3;&#x5D4C;&#x5957;&#x8BF7;&#x6C42;" class="headerlink" title="3&#x3001;flatMap()&#x89E3;&#x51B3;&#x5D4C;&#x5957;&#x8BF7;&#x6C42;"></a>3&#x3001;flatMap()&#x89E3;&#x51B3;&#x5D4C;&#x5957;&#x8BF7;&#x6C42;</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考文章："><span class="nav-number">5.1.</span> <span class="nav-text"><a href="#&#x53C2;&#x8003;&#x6587;&#x7AE0;&#xFF1A;" class="headerlink" title="&#x53C2;&#x8003;&#x6587;&#x7AE0;&#xFF1A;"></a>&#x53C2;&#x8003;&#x6587;&#x7AE0;&#xFF1A;</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">fhyPayaso</span>
+
+  
+</div>
+
+
+<div class="powered-by">
+
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+  本站访客数:<span id="busuanzi_value_site_uv"></span>
+</span>
+</div>
+
+<!-- <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.3</div>
+-->
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共11.6k字</span>
+</div>
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>
