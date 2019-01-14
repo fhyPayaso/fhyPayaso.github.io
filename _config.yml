@@ -5,10 +5,17 @@
 # Site
 title: fhyPayaso的博客
 subtitle: 斜眼笑看世界
-description: 要七饼吗，不七渲惹
+description: 生而为人，何需抱歉
 author: fhyPayaso
 language: zh-Hans
 timezone:
+social:
+  GitHub: https://github.com/fhyPayaso || github
+  E-Mail: mailto:fhypayaso123@gmail.com || envelope
+  掘金: https://juejin.im/user/59e3273a51882551dd31108c || spinner
+  知乎: https://www.zhihu.com/people/fan-hong-yu-52-28/activities || heartbeat
+  Bilibili: http://space.bilibili.com/109774655? || meh-o
+
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'

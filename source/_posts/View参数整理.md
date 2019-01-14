@@ -1,7 +1,7 @@
 ---
 title: View参数相关
 date: 2018-06-20
-tags: android
+tags: Android
 ---
 
 

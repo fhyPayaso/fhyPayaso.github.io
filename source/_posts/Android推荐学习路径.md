@@ -1,7 +1,8 @@
 ---
 title: Android推荐学习路径
 date: 2017-12-31 23:02:27
-tags: android
+tags: Android
+copyright: true
 ---
 
 > 不洗碗工作室 @Author fhyPayaso
