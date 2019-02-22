@@ -1,7 +1,12 @@
 ---
 title: Linux+django+nginx+uwsgi+mysql部署
 date: 2018-03-23
-tags: Django
+categories: Django
+tags: 
+- Django
+- 后端
+- 环境部署
+copyright: false
 ---
 
 

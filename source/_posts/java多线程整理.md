@@ -1,7 +1,11 @@
 ---
 title: Java多线程整理
 date: 2018-04-21
-tags: Java
+categories: Java
+tags: 
+- Java
+- 多线程
+copyright: true
 ---
 
 

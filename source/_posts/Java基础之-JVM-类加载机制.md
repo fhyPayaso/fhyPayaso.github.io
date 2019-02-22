@@ -1,7 +1,12 @@
 ---
 title: Java基础之-JVM-类加载机制
 date: 2018-05-01
-tags: Java
+categories: Java
+tags: 
+- Java
+- JVM
+- 面试
+copyright: false
 ---
 
 ##Java基础之-JVM-类加载机制

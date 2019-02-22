@@ -1,7 +1,10 @@
 ---
 title: Android推荐学习路径
 date: 2017-12-31 23:02:27
-tags: Android
+categories: Android
+tags: 
+- Android
+- 学习路径
 copyright: true
 ---
 
@@ -30,7 +33,7 @@ copyright: true
 
 + 遇到问题尽量自己先百度谷歌
 
-+ 本学习路径将在[个人博客](http://www.fhypayaso.top)上实时更新
++ 本学习路径将在[个人博客](http://www.fhypayaso.cn)上实时更新
 
 ## 第一周
 + 熟悉java基础语法 ： [菜鸟教程](http://www.runoob.com/java/java-tutorial.html)

@@ -1,7 +1,11 @@
 ---
 title: 老生常谈——activity生命周期
 date: 2018-03-31 21:56:45
-tags: Android
+categories: Android
+tags: 
+- Android
+- 面试
+copyright: true
 ---
 
 ## 老生常谈——activity生命周期

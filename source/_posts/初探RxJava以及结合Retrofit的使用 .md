@@ -1,7 +1,12 @@
 ---
 title: 初探RxJava以及结合Retrofit的使用 
 date: 2018-02-23 21:56:45
-tags: Android
+categories: Android
+tags: 
+- Android
+- RxJava
+- Retrofit
+copyright: true
 ---
 
 android当前最主流的网络请求框架莫过于**RxJava2+Retrofit2+OkHttp3**，之前的项目中也曾经使用过Retrofit进行网络请求，二次封装后使用非常方便。但为解决一些嵌套网络请求存在的问题，这次的新项目打算在网络请求中使用RxJava，体验一下响应式编程的感觉。

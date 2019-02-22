@@ -1,7 +1,11 @@
 ---
 title: Android实习面经(京东、头条)
 date: 2018-08-13
-tags: 面试
+categories: 面试
+tags: 
+- Android
+- 面试
+copyright: true
 ---
 
 #### 今日头条-DATA(挂)

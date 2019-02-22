@@ -1,9 +1,13 @@
 ---
 title: 初探android中内存泄漏
 date: 2017-12-16 22:19:34
+categories: Android
+tags: 
+- Android
+- 内存泄露
 copyright: true
-tags: Android
 ---
+
 初步探究android的内存机制，内存泄漏的原因和解决办法，以及检测神器—LeakCanary的使用
 <!-- more-->
 > 作者：fhyPayaso

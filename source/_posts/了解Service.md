@@ -1,7 +1,11 @@
 ---
 title: 从Service聊到IPC
 date: 2018-06-14
-tags: Android
+categories: Android
+tags: 
+- Android
+- 多进程
+copyright: false
 ---
 
 

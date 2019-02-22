@@ -3,7 +3,7 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: fhyPayaso的博客
+title: fhyPayasoの博客
 subtitle: 斜眼笑看世界
 description: 生而为人，何需抱歉
 author: fhyPayaso
@@ -19,7 +19,7 @@ social:
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
-url: http://yoursite.com
+url: https://www.fhypayaso.cn/
 root: /
 permalink: :year/:month/:day/:title/
 permalink_defaults:
@@ -87,3 +87,37 @@ deploy:
   type: git
   repository: https://github.com/fhyPayaso/fhyPayaso.github.io.git
   branch: master
+
+live2d:
+  enable: true
+  scriptFrom: local
+  pluginRootPath: live2dw/
+  pluginJsPath: lib/
+  pluginModelPath: assets/
+  tagMode: false
+  debug: false
+  model:
+    #     use: live2d-widget-model-nietzsche  #模板目录，在node_modules里
+    use: hijiki
+  display:
+    position: left
+    width: 150
+    height: 300
+  mobile:
+    show: true
+
+
+feed: # RSS订阅插件
+  type: atom
+  path: atom.xml
+  limit: 0
+ 
+plugins: hexo-generate-feed
+
+# 搜索
+algolia:
+  applicationID: '5D0EBGIBF9'
+  apiKey: '8c672bfc6f286f45d670b2a090f428a5'
+  adminApiKey: 'fd5d068b06711899fff034f96259d0a0'
+  indexName: 'fhypayasoblog'
+  chunkSize: 5000

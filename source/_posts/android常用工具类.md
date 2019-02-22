@@ -1,7 +1,11 @@
 ---
 title: android常用工具类
 date: 2017-12-16 22:19:05
-tags: Android
+categories: Android
+tags: 
+- Android
+- 工具类
+copyright: false
 ---
 
 整理的Android常用工具类,用于SimpleAndoid项目的编写

@@ -1,7 +1,10 @@
 ---
 title: git的基本使用
 date: 2017-12-16 22:18:17
-tags: git
+categories: Git
+tags: 
+- Git
+copyright: true
 ---
 
 一些常用的git命令行操作，防止遗忘
