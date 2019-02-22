@@ -18,3 +18,4 @@ echo "部署成功辣ヾ(o◕∀◕)ﾉヾ"
 # git commit -m${commit_msg}
 # echo "commit 完毕"
 # git push origin hexo
+
