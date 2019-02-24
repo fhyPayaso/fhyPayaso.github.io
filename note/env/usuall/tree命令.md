@@ -18,7 +18,7 @@ brew install tree
     tree -N
     ```
 
- + 输出到指定文件
+ + 输出到指定文件
 
     ```
     tree -N  >README.md
