@@ -11,11 +11,3 @@ hexo g
 hexo d
 echo "部署成功辣ヾ(o◕∀◕)ﾉヾ"
 
-# # github备份
-# commit_msg=$1
-# git add .
-# echo "add 完毕"
-# git commit -m${commit_msg}
-# echo "commit 完毕"
-# git push origin hexo
-
