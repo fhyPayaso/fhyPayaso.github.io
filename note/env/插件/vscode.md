@@ -8,3 +8,7 @@
 + GitLens : VScode上使用git必备
 
 + Markdown Preview Enhanced : VS自带的MD预览太丑，不如直接展示pdf效果
+
++ LeetCode : 能在vscode上刷leetcode，国人开发的插件
+
++ IntelliJ IDEA Keybindings : 将idea的快捷键迁移到vscode，包括导入包,代码格式化等
