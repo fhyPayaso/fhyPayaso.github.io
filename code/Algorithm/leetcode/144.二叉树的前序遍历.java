@@ -1,3 +1,7 @@
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Stack;
+
 /*
  * @lc app=leetcode.cn id=144 lang=java
  *

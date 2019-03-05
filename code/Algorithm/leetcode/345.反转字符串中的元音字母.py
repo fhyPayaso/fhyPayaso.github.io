@@ -31,7 +31,7 @@
 
 
 class Solution:
-    def reverseVowels(self, s: str) -> str:
+    def reverseVowels(self, s: str) -> str:            
         i = 0
         j = len(s) - 1
         yuan = 'aeiouAEIOU'
