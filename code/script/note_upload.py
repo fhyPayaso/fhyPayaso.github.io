@@ -1,5 +1,5 @@
-# -*- coding: UTF-8 -*-
-#平时在公司和家切换时候用
+# -*- coding: utf-8 -*-
+# 平时在公司和家切换时候用
 import os
 print("<============= upload begin ==============>")
 os.system('git add .')
