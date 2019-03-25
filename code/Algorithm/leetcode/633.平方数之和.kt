@@ -34,12 +34,17 @@ import kotlin.math.sqrt
  */
 class Solution {
     fun judgeSquareSum(c: Int): Boolean {
-        val l = sqrt(c * 1.0).toInt()
-        for (i in 0..l) {
-            for (j in i..l) {
-                if (i * i + j * j == c) {
-                    return true
-                }
+        if (c < 0) {
+            return false
+        }
+        var start = 0
+        var end = Math.sqrt(c.toDouble()).toInt()
+        while (start <= end) {
+            val temp = start * start + end * end
+            when {
+                temp < c -> start++
+                temp > c -> end--
+                else -> return true
             }
         }
         return false
