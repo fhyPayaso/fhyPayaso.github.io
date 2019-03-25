@@ -27,12 +27,13 @@ secret_key = 'ot-QQmfoY_Cnnn9FZ2B2_-nNuakOIuQubvFOe1-J'
 
 # 构建图片名称
 current_time_millis = time.time()
-current_format_time = time.strftime('%Y.%m.%d', time.localtime(current_time_millis))
-img_name = current_format_time + '/' + bytes(current_time_millis) + '.png' 
+current_format_time = time.strftime(
+    '%Y.%m.%d', time.localtime(current_time_millis))
+img_name = current_format_time + '/' + bytes(current_time_millis) + '.png'
 
-#构建鉴权对象
+# 构建鉴权对象
 q = Auth(access_key, secret_key)
-#生成上传 Token，可以指定过期时间等
+# 生成上传 Token，可以指定过期时间等
 token = q.upload_token(bucket_name, img_name, 3600)
 # 开始上传
 ret, info = put_file(token, img_name, img_path)
@@ -43,6 +44,3 @@ if ret['key'] == img_name and ret['hash'] == etag(img_path):
     print '![](' + img_url + ')'
 else:
     print(info)
-
-
-
