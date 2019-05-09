@@ -24,6 +24,8 @@ Android中X轴和Y轴的正方向分别为右和下
 + **right** : 右下角横坐标
 + **bottom** : 右下角纵坐标
 
+这些值是在绘制的过程中就已经确定的，不会改变
+
 可以通过right-left、bottom-top来获取view的宽度和高度
 
 + **translationX** : 左上角横坐标偏移量

@@ -58,10 +58,16 @@ copyright: false
 	+ 安装python3
 
 			sudo apt-get install python3
+
+			
 				
 	+ 为python安装pip3
 
 			sudo apt install python3-pip
+
+	[unsupported locale setting](https://blog.csdn.net/qq_33232071/article/details/51108062)
+
+	[替换pip3](https://blog.csdn.net/accumulate_zhang/article/details/80269313)
 				
 	+ 更新一下pip版本
 
