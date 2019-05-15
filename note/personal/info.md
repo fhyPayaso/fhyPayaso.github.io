@@ -1,0 +1,23 @@
+39.107.72.179
+
+	
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'fhy@9545424' WITH GRANT OPTION;
+
+FLUSH PRIVILEGES;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
