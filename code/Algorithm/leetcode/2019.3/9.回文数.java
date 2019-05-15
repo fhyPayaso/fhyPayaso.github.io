@@ -40,7 +40,7 @@
  */
 class Solution {
     public boolean isPalindrome(int x) {
-
+        // 转换成string 对称比较
         String str = String.valueOf(x);
         int i = 0;
         int len = str.length();

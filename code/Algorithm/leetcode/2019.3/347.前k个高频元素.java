@@ -57,23 +57,24 @@ class Solution {
 
         // 以频率为值进行桶排序，不同数字可能出现频率相同，所以用二维数组
         int[][] temp = new int[maxNum + 1][nums.length + 1];
+        // 初始化二维数组
         for (int i = 0; i <= maxNum; i++) {
             // 只能对一维数组使用
             Arrays.fill(temp[i], flag);
         }
         for (int key : map.keySet()) {
             int value = map.get(key);
-
+            // 该行未被填充过，首位设为key
             if (temp[value][0] == flag) {
                 temp[value][0] = key;
             } else {
+                // 否则将key放在末尾
                 int j = 0;
                 while (temp[value][j] != flag) {
                     j++;
                 }
                 temp[value][j] = key;
             }
-
         }
         // 倒序找前K个数
         for (int i = maxNum; i > 0; i--) {

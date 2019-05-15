@@ -34,6 +34,7 @@ class Solution {
         }
         for (int i = 0; i < nums.length; i++) {
             int tag = target - nums[i];
+            // 注意过滤本身
             if (map.containsKey(tag) && map.get(tag) != i) {
                 return new int[] { i, map.get(tag) };
             }

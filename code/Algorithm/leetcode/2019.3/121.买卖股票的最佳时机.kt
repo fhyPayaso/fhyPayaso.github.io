@@ -35,16 +35,16 @@ import kotlin.math.max
  * 
  */
 class Solution {
-fun maxProfit(prices: IntArray): Int {
-    if (prices.isEmpty()) return 0
-    var res = 0
-    var min = prices[0]
-    for (i in 1 until prices.size) {
-        // 同时维护最小值和最大差
-        res = max(res, prices[i] - min)
-        if (prices[i] < min) min = prices[i]
+    fun maxProfit(prices: IntArray): Int {
+        if (prices.isEmpty()) return 0
+        var res = 0
+        var min = prices[0]
+        for (i in 1 until prices.size) {
+            // 同时维护最小值和最大差
+            res = max(res, prices[i] - min)
+            if (prices[i] < min) min = prices[i]
+        }
+        return res
     }
-    return res
-}
 }
 

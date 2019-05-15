@@ -42,6 +42,7 @@ class Solution {
         while (left < right) {
             // 常规写法会溢出
             val mid = left + (right - left) / 2
+            // 二分查找，判断写成除法形式防止溢出
             if (mid == x / mid)
                 return mid
             else if (mid > x / mid) {

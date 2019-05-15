@@ -39,20 +39,24 @@ class Solution {
         ListNode t1 = head;
         ListNode t2 = head;
 
+        // 第一个链表先移动N步
         while (n-- != 0) {
             t1 = t1.next;
         }
 
+        // 两个链表同时移动，第一个链表移动到底，此时第二个链表处于倒数第N个节点
         while (t1 != null) {
             t1 = t1.next;
             t2 = t2.next;
         }
 
         if (t2.next != null) {
+            // 不是最后一个节点可以直接删除
             t2.val = t2.next.val;
             t2.next = t2.next.next;
         } else {
 
+            // 若是最后一个节点删除需要从头遍历
             if (t2 == head) {
                 return null;
             }

@@ -35,8 +35,10 @@ fun maxSubArray(nums: IntArray): Int {
     var res = 0
     var max = nums[0]
     for (i in 0 until nums.size) {
+        // 累加并维护最大值
         res += nums[i]
         max = max(max, res)
+        // 下限为0(不选)
         if (res <= 0) res = 0
     }
     return max
