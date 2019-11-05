@@ -1,39 +1,45 @@
 #include <iostream>
 #include <cmath>
+#include <map>
+#include <vector>
 using namespace std;
 
 unsigned int p31 = 01 << 31;
 
-int reverse(long x)
+int majorityElement(vector<int> &nums)
 {
-    long long arr[40];
-    int len = 0;
-    long long res = 0;
-    long long temp = abs(x);
-    while (temp != 0)
-    {
-        arr[++len] = temp % 10;
-        temp /= 10;
-    }
-    long long base = 1;
-    for (int i = len; i >= 1; i--)
-    {
-        res += base * arr[i];
-        base *= 10;
-    }
 
-    if (x >= 0 && res <= p31 - 1)
-        return res;
-    else if (x < 0 && res <= p31)
-        return res * -1;
-    else
-        return 0;
+    map<int, int> temp;
+    int len = nums.size();
+    int res, maxn;
+    for (int i = 0; i < len; i++)
+    {
+        int key = nums[i];
+        map<int, int>::iterator it;
+        temp.find(key);
+        if (it != temp.end())
+        {
+            int cur = it->second;
+            if (cur + 1 > len / 2)
+                return key;
+            else
+                (*it).second = cur + 1;
+        }
+        else
+            temp.insert(pair<int, int>(key, 1));
+    }
+    return 0;
 }
 
 int main()
 {
 
-    cout << reverse(-123) << endl;
+    vector<int> par;
+    par.push_back(3);
+    par.push_back(2);
+    par.push_back(3);
+
+    cout << majorityElement(par) << endl;
 
     return 0;
 }
