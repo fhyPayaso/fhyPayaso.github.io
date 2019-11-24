@@ -6,40 +6,61 @@ using namespace std;
 
 unsigned int p31 = 01 << 31;
 
-int majorityElement(vector<int> &nums)
-{
+vector<vector<int> > res;
 
-    map<int, int> temp;
-    int len = nums.size();
-    int res, maxn;
-    for (int i = 0; i < len; i++)
+void dfs(vector<int> &nums,
+         vector<int> temp,
+         int flag[])
+{
+    if (nums.size() == temp.size())
     {
-        int key = nums[i];
-        map<int, int>::iterator it;
-        temp.find(key);
-        if (it != temp.end())
-        {
-            int cur = it->second;
-            if (cur + 1 > len / 2)
-                return key;
-            else
-                (*it).second = cur + 1;
-        }
-        else
-            temp.insert(pair<int, int>(key, 1));
+        res.push_back(temp);
+        return;
     }
-    return 0;
+    for (int i = 0; i < nums.size(); i++)
+    {
+        cout<<i<<endl;
+        if (flag[i] == 0)
+        {
+            cout << i << endl;
+            temp.push_back(nums[i]);
+            flag[i] = 1;
+            dfs(nums, temp, flag);
+            temp.pop_back();
+            flag[i] = 0;
+        }
+    }
+}
+
+vector<vector<int> > permute(vector<int> &nums)
+{
+    int flag[1000] = {0};
+    vector<int> temp;
+    dfs(nums, temp, flag);
+    return res;
 }
 
 int main()
 {
 
     vector<int> par;
-    par.push_back(3);
+    par.push_back(1);
     par.push_back(2);
     par.push_back(3);
 
-    cout << majorityElement(par) << endl;
+    vector<vector<int> > a = permute(par);
 
+    cout<<"[";
+    for (int i = 0; i < a.size(); i++)
+    {
+        cout << "[";
+        vector<int> num = a[i];
+        for(int j = 0;j<num.size();j++)
+        {
+            cout<<num[j]<<",";
+        }
+        cout << "],";
+    }
+    cout << "]"<<endl;
     return 0;
 }
