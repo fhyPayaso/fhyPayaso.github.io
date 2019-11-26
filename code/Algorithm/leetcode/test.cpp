@@ -6,61 +6,107 @@ using namespace std;
 
 unsigned int p31 = 01 << 31;
 
-vector<vector<int> > res;
-
-void dfs(vector<int> &nums,
-         vector<int> temp,
-         int flag[])
+int minDistance(string word1, string word2)
 {
-    if (nums.size() == temp.size())
+    int len1 = word1.length();
+    int len2 = word2.length();
+    int res[len1 + 1][len2 + 1];
+
+    for (int i = 0; i <= len1; i++)
     {
-        res.push_back(temp);
-        return;
-    }
-    for (int i = 0; i < nums.size(); i++)
-    {
-        cout<<i<<endl;
-        if (flag[i] == 0)
+        for (int j = 0; j <= len2; j++)
         {
-            cout << i << endl;
-            temp.push_back(nums[i]);
-            flag[i] = 1;
-            dfs(nums, temp, flag);
-            temp.pop_back();
-            flag[i] = 0;
+            if (i == 0)
+            {
+                res[i][j] = j;
+                continue;
+            }
+            else if (j == 0)
+            {
+                res[i][j] = i;
+                continue;
+            }
+            int diff = word1[i - 1] == word2[j - 1] ? 0 : 1;
+
+            int n1 = min(res[i - 1][j] + 1, res[i][j - 1] + 1);
+            int n2 = res[i - 1][j - 1] + diff;
+            res[i][j] = min(n1, n2);
         }
     }
+
+    for (int i = 0; i <= len1; i++)
+    {
+        for (int j = 0; j <= len2; j++)
+        {
+            cout << res[i][j];
+        }
+        cout << endl;
+    }
+
+    return res[len1][len2];
 }
 
-vector<vector<int> > permute(vector<int> &nums)
+struct ListNode
 {
-    int flag[1000] = {0};
-    vector<int> temp;
-    dfs(nums, temp, flag);
-    return res;
+    int val;
+    ListNode *next;
+    ListNode(int x) : val(x), next(nullptr) {}
+};
+
+ListNode *removeElements(ListNode *head, int val)
+{
+    ListNode *p = head;
+    ListNode *pre = head;
+
+    while (head != nullptr)
+    {
+        int cur = head->val;
+        while (cur == val)
+        {
+            
+            if (head->next != nullptr)
+            {
+                head->val = head->next->val;
+                head->next = head->next->next;
+
+                val = head->val;
+            }
+            else
+            {
+                delete (head);
+                pre->next = nullptr;
+                return p;
+            }
+        }
+
+        pre = head;
+        head = head->next;
+    }
+
+    // if (p != nullptr && p->next == nullptr && p->val == val)
+    // {
+    //     return nullptr;
+    // }
+    return p;
 }
 
 int main()
 {
+    ListNode *p = new ListNode(1);
+    p->next = new ListNode(2);
+    p = p->next;
+    p->next = new ListNode(6);
+    p = p->next;
+    p->next = new ListNode(3);
+    p = p->next;
+    p->next = new ListNode(4);
+    p = p->next;
+    p->next = new ListNode(5);
+    p = p->next;
+    p->next = new ListNode(6);
+    p = p->next;
 
-    vector<int> par;
-    par.push_back(1);
-    par.push_back(2);
-    par.push_back(3);
+    removeElements(p, 6);
 
-    vector<vector<int> > a = permute(par);
-
-    cout<<"[";
-    for (int i = 0; i < a.size(); i++)
-    {
-        cout << "[";
-        vector<int> num = a[i];
-        for(int j = 0;j<num.size();j++)
-        {
-            cout<<num[j]<<",";
-        }
-        cout << "],";
-    }
-    cout << "]"<<endl;
     return 0;
 }
