@@ -37,8 +37,8 @@ chmod +x shadowsocksR.sh
 全部选择完毕后，当出现如下命令就说明安装成功了：
 
 ```
+伦敦
 
-Congratulations, ShadowsocksR server install completed!
 Your Server IP        :  45.77.88.62
 Your Server Port      :  9580
 Your Password         :  22612261
@@ -46,9 +46,18 @@ Your Protocol         :  origin
 Your obfs             :  plain
 Your Encryption Method:  aes-256-cfb
 
-Welcome to visit:https://shadowsocks.be/9.html
+纽约
+
+Your Server IP        :  149.28.48.183
+Your Server Port      :  18448
+Your Password         :  22612261
+Your Protocol         :  origin
+Your obfs             :  plain
+Your Encryption Method:  aes-256-cfb
 
 ```
+
+
 
 
 ### 开启BBR加速
