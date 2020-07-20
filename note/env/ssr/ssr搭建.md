@@ -36,15 +36,6 @@ chmod +x shadowsocksR.sh
 根据需要选择，不懂的话直接选1，或者默认回车。下面会提示你输入你的 SSR SERVER 的密码和端口。不输入就是默认。跑完命令后会出来你的 SSR 客户端的信息。
 全部选择完毕后，当出现如下命令就说明安装成功了：
 
-```
-伦敦
-
-Your Server IP        :  45.77.88.62
-Your Server Port      :  9580
-Your Password         :  22612261
-Your Protocol         :  origin
-Your obfs             :  plain
-Your Encryption Method:  aes-256-cfb
 
 纽约
 
