@@ -48,6 +48,8 @@ using namespace std;
 
 简单定义next数组即: 截止到上一个字符对应的子串, 该子串前缀后缀长度重合的最大长度
 
+https://www.cnblogs.com/zhangtianq/p/5839909.html
+
 */
 class Solution
 {
