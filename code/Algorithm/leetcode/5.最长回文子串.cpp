@@ -42,23 +42,125 @@ using namespace std;
 class Solution
 {
 public:
-    string longestPalindrome(string s)
+    string findCurStr(int left, int right, string s)
     {
-        int manLen = 1;
         int len = s.size();
-        for (int i = 0; i < len; i++)
+        int maxlen = 1;
+        int start = left;
+        while (left >= 0 && right < len)
         {
-
-            int left, right;
-            if (i % 2 == 1)
+            if (s[left] == s[right])
             {
+                int l = right - left + 1;
+                if (l > maxlen)
+                {
+                    maxlen = l;
+                    start = left;
+                }
+                left--;
+                right++;
             }
             else
-            {
-                /* code */
-            }
+                break;
         }
-        // return maxLen;
+        return s.substr(start, maxlen);
+    }
+
+    string longestPalindrome(string s)
+    {
+        int len = s.size();
+        string res = "";
+        for (int i = 0; i < len; i++)
+        {
+            string str1 = findCurStr(i, i, s);
+            string str2 = findCurStr(i, i + 1, s);
+            string str = str1.size() >= str2.size() ? str1 : str2;
+            if (str.size() > res.size())
+                res = str;
+        }
+        return res;
     }
 };
 // @lc code=end
+
+// ********暴力解法 遍历所有子串 O(n3)******//
+
+// string longestPalindrome(string s)
+// {
+//     int len = s.size();
+//     string res = "";
+//     for (int i = 0; i < len; i++)
+//     {
+//         for (int j = i; j < len; j++)
+//         {
+//             int left = i;
+//             int right = j;
+//             while (left <= right)
+//             {
+//                 if (s[left] == s[right])
+//                 {
+//                     left++;
+//                     right--;
+//                 }
+//                 else
+//                     break;
+//             }
+//             if (left > right)
+//             {
+//                 int newlen = j - i + 1;
+//                 if (newlen > res.size())
+//                     res = s.substr(i, newlen);
+//             }
+//         }
+//     }
+//     return res;
+// }
+
+// ******** 中项展开  O(n3)******//
+
+/*
+
+中项展开时要注意, 不是判断当前下标是否为奇偶
+
+而是当前下标可能是奇数回文串中项, 也可能是是偶数回文数中项
+
+*/
+
+// string findCurStr(int left, int right, string s)
+// {
+//     int len = s.size();
+//     int maxlen = 1;
+//     int start = left;
+//     while (left >= 0 && right < len)
+//     {
+//         if (s[left] == s[right])
+//         {
+//             int l = right - left + 1;
+//             if (l > maxlen)
+//             {
+//                 maxlen = l;
+//                 start = left;
+//             }
+//             left--;
+//             right++;
+//         }
+//         else
+//             break;
+//     }
+//     return s.substr(start, maxlen);
+// }
+
+// string longestPalindrome(string s)
+// {
+//     int len = s.size();
+//     string res = "";
+//     for (int i = 0; i < len; i++)
+//     {
+//         string str1 = findCurStr(i, i, s);
+//         string str2 = findCurStr(i, i + 1, s);
+//         string str = str1.size() >= str2.size() ? str1 : str2;
+//         if (str.size() > res.size())
+//             res = str;
+//     }
+//     return res;
+// }
