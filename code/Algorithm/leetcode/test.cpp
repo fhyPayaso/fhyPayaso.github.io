@@ -4,109 +4,54 @@
 #include <vector>
 using namespace std;
 
-unsigned int p31 = 01 << 31;
-
-int minDistance(string word1, string word2)
+int leastInterval(vector<char> &tasks, int n)
 {
-    int len1 = word1.length();
-    int len2 = word2.length();
-    int res[len1 + 1][len2 + 1];
+    int table[26];
+    for (int i = 0; i < 26; i++)
+        table[i] = 0;
 
-    for (int i = 0; i <= len1; i++)
+    for (int i = 0; i < tasks.size(); i++)
+        table[int(tasks[i] - 'A')]++;
+
+    int maxCount = 0;
+    int maxVal = 0;
+    for (int i = 0; i < 25; i++)
     {
-        for (int j = 0; j <= len2; j++)
+        // cout<< table[i]<<endl;
+        
+        if (table[i] > maxVal)
         {
-            if (i == 0)
-            {
-                res[i][j] = j;
-                continue;
-            }
-            else if (j == 0)
-            {
-                res[i][j] = i;
-                continue;
-            }
-            int diff = word1[i - 1] == word2[j - 1] ? 0 : 1;
-
-            int n1 = min(res[i - 1][j] + 1, res[i][j - 1] + 1);
-            int n2 = res[i - 1][j - 1] + diff;
-            res[i][j] = min(n1, n2);
+            maxVal = table[i];
+            maxCount = 1;
         }
+        else if (table[i] == maxVal)
+            maxCount++;
     }
 
-    for (int i = 0; i <= len1; i++)
-    {
-        for (int j = 0; j <= len2; j++)
-        {
-            cout << res[i][j];
-        }
-        cout << endl;
-    }
+    cout<< "maxVal: "<< maxVal << endl;
+    cout<< "maxCount: "<< maxCount << endl;
 
-    return res[len1][len2];
-}
+    // 如果桶每行不能填满,或刚好填满
+    int res1 = (n + 1) * (maxVal - 1) + maxCount;
+    // 若桶每行都能溢出, 时间直接为长度
+    int res2 = tasks.size();
 
-struct ListNode
-{
-    int val;
-    ListNode *next;
-    ListNode(int x) : val(x), next(nullptr) {}
-};
-
-ListNode *removeElements(ListNode *head, int val)
-{
-    ListNode *p = head;
-    ListNode *pre = head;
-
-    while (head != nullptr)
-    {
-        int cur = head->val;
-        while (cur == val)
-        {
-            
-            if (head->next != nullptr)
-            {
-                head->val = head->next->val;
-                head->next = head->next->next;
-
-                val = head->val;
-            }
-            else
-            {
-                delete (head);
-                pre->next = nullptr;
-                return p;
-            }
-        }
-
-        pre = head;
-        head = head->next;
-    }
-
-    // if (p != nullptr && p->next == nullptr && p->val == val)
-    // {
-    //     return nullptr;
-    // }
-    return p;
+    // 两种情况, 取最大值即可
+    return res1 > res2 ? res1 : res2;
 }
 
 int main()
 {
-    ListNode *p = new ListNode(1);
-    p->next = new ListNode(2);
-    p = p->next;
-    p->next = new ListNode(6);
-    p = p->next;
-    p->next = new ListNode(3);
-    p = p->next;
-    p->next = new ListNode(4);
-    p = p->next;
-    p->next = new ListNode(5);
-    p = p->next;
-    p->next = new ListNode(6);
-    p = p->next;
+    
+    vector<char> vec;
+    vec.push_back('A');
+    vec.push_back('A');
+    vec.push_back('A');
+    vec.push_back('B');
+    vec.push_back('B');
+    vec.push_back('B');
 
-    removeElements(p, 6);
+    leastInterval(vec, 2);
 
     return 0;
 }
