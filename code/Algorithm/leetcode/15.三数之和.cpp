@@ -56,11 +56,9 @@ public:
         {
             cur.push_back(nums[i]);
             dfs(nums, cur);
-
+            cur.pop_back();
         }
         
-
-
     }
 
     vector<vector<int>> threeSum(vector<int> &nums)
