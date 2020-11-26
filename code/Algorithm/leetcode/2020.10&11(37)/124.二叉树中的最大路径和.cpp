@@ -56,11 +56,27 @@
  *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
  * };
  */
-class Solution {
+class Solution
+{
 public:
-    int maxPathSum(TreeNode* root) {
+    int maxRes = -999999;
 
+    int helper(TreeNode *node)
+    {
+        if (node == nullptr)
+            return 0;
+        int leftVal = max(helper(node->left), 0);
+        int rightVal = max(helper(node->right), 0);
+
+        maxRes = max(maxRes, leftVal + rightVal + node->val);
+
+        return node->val + max(leftVal , rightVal);
+    }
+
+    int maxPathSum(TreeNode *root)
+    {
+        helper(root);
+        return maxRes;
     }
 };
 // @lc code=end
-
