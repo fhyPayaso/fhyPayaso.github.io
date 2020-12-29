@@ -5,8 +5,6 @@
 
 
 
-AccessKey ID：LTAINdV5YcrXbNSg
-AccessKey Secret：  tSVWPk1jTU4xRfMV5z2ZaIDGDEImMG
 
 
 
