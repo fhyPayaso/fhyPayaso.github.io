@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="1、进程和线程 并发:在同一个时间段内，同一个cpu上执行多个任务，但在某一时刻cpu只处理一个任务。 并行:同一时间段内，多个cpu执行多个任务，在某一时刻有多个任务同时执行，并且相互之间没有干扰。  这里再详细说一下并发时任务是如何调度的，引用一下博客：  大部分操作系统(如Windows、Linux)的任务调度是采用时间片轮转的抢占式调度方式，也就是说一个任务执行一小段时间后强制暂停去执行下">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java多线程整理">
+<meta property="og:url" content="http://example.com/2018/04/21/java%E5%A4%9A%E7%BA%BF%E7%A8%8B%E6%95%B4%E7%90%86/index.html">
+<meta property="og:site_name" content="fhyPayaso&#39;s Blog">
+<meta property="og:description" content="1、进程和线程 并发:在同一个时间段内，同一个cpu上执行多个任务，但在某一时刻cpu只处理一个任务。 并行:同一时间段内，多个cpu执行多个任务，在某一时刻有多个任务同时执行，并且相互之间没有干扰。  这里再详细说一下并发时任务是如何调度的，引用一下博客：  大部分操作系统(如Windows、Linux)的任务调度是采用时间片轮转的抢占式调度方式，也就是说一个任务执行一小段时间后强制暂停去执行下">
+<meta property="og:locale">
+<meta property="og:image" content="http://img.hellofhy.cn/18-3-31/32283692.jpg">
+<meta property="og:image" content="http://img.hellofhy.cn/19-1-12/56161691.jpg">
+<meta property="og:image" content="http://img.hellofhy.cn/18-4-21/4196162.jpg">
+<meta property="og:image" content="http://img.hellofhy.cn/18-4-21/5146865.jpg">
+<meta property="og:image" content="http://img.hellofhy.cn/18-4-21/14097141.jpg">
+<meta property="og:image" content="http://img.hellofhy.cn/18-4-22/40318473.jpg">
+<meta property="og:image" content="http://img.hellofhy.cn/18-4-22/82361554.jpg">
+<meta property="article:published_time" content="2018-04-20T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-12-29T08:29:27.421Z">
+<meta property="article:author" content="fhyPayaso">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="多线程">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://img.hellofhy.cn/18-3-31/32283692.jpg">
+
+<link rel="canonical" href="http://example.com/2018/04/21/java%E5%A4%9A%E7%BA%BF%E7%A8%8B%E6%95%B4%E7%90%86/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'cn'
+  };
+</script>
+
+  <title>Java多线程整理 | fhyPayaso's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">fhyPayaso's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="cn">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/04/21/java%E5%A4%9A%E7%BA%BF%E7%A8%8B%E6%95%B4%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="fhyPayaso">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="fhyPayaso's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Java多线程整理
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-04-21 00:00:00" itemprop="dateCreated datePublished" datetime="2018-04-21T00:00:00+08:00">2018-04-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-12-29 16:29:27" itemprop="dateModified" datetime="2020-12-29T16:29:27+08:00">2020-12-29</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="1、进程和线程"><a href="#1、进程和线程" class="headerlink" title="1、进程和线程"></a>1、进程和线程</h3><ul>
+<li>并发:在同一个时间段内，同一个cpu上执行多个任务，但在某一时刻cpu只处理一个任务。</li>
+<li>并行:同一时间段内，多个cpu执行多个任务，在某一时刻有多个任务同时执行，并且相互之间没有干扰。</li>
+</ul>
+<p>这里再详细说一下并发时任务是如何调度的，引用一下博客：</p>
+<blockquote>
+<p>大部分操作系统(如Windows、Linux)的任务调度是采用时间片轮转的抢占式调度方式，也就是说一个任务执行一小段时间后强制暂停去执行下一个任务，每个任务轮流执行。任务执行的一小段时间叫做时间片，任务正在执行时的状态叫运行状态，任务执行一段时间后强制暂停去执行下一个任务，被暂停的任务就处于就绪状态等待下一个属于它的时间片的到来。这样每个任务都能得到执行，由于CPU的执行效率非常高，时间片非常短，在各个任务之间快速地切换，给人的感觉就是多个任务在“同时进行”，这也就是我们所说的并发(别觉得并发有多高深，它的实现很复杂，但它的概念很简单，就是一句话：多个任务同时执行)。</p>
+</blockquote>
+<p><img src="http://img.hellofhy.cn/18-3-31/32283692.jpg"></p>
+<p>在多个任务中切换也是要付出代价的,一个任务消耗完了时间片，需要根据调度策略来选取下一个任务来执行，而这一过程也需要消耗时间，叫做<strong>切换耗时</strong>,而这也将影响时间片大小的选取。</p>
+<ul>
+<li><p><strong>进程</strong>：进程代表一个运行中的程序，是资源分配与调度的基本单位。进程有三大特性：</p>
+<ul>
+<li>独立性：独立的资源，私有的地址空间，进程间互不影响。</li>
+<li>动态性：进程具有生命周期。</li>
+<li>并发性：多进程可以在单核CPU上并发运行。</li>
+</ul>
+</li>
+<li><p><strong>线程</strong>：线程代表进程中的一个顺序执行流，多线程就是一个进程中的多个顺序执行流。线程也被称为轻量级的进程，是系统运行的基本单位。</p>
+</li>
+<li><p><strong>多线程的优势</strong>（进程线程区别）：</p>
+<ul>
+<li>进程之间不能共享内存，线程之间共享内存更容易，多线程可协作完成进程工作；</li>
+<li>创建进程进行资源分配的代价较创建线程要大得多，所以多线程在高并发环境中效率更高。</li>
+</ul>
+</li>
+</ul>
+<h3 id="2、使用多线程"><a href="#2、使用多线程" class="headerlink" title="2、使用多线程"></a>2、使用多线程</h3><p>三种使用方法 :</p>
+<ul>
+<li><p><strong>Thread</strong> : 新建子类继承Thread类，重写run方法</p>
+<pre><code>  public class MyThread extends Thread&#123;
+
+      @Override
+      public void run() &#123;
+
+      &#125;
+  &#125;</code></pre>
+<p>  在使用的时候直接创建实例并开启即可</p>
+<pre><code>  Thread myThread = new MyThread();
+  myThread.start();</code></pre>
+</li>
+</ul>
+<ul>
+<li><p><strong>Runnable</strong> : 新建子类实现Runnable接口，重写run方法。实例化后作为参数传入<code>Thread()</code>的构造方法中(也可以使用匿名内部类实现)。</p>
+<pre><code>  //1、继承接口实现
+  public class MyThread implements Runnable&#123;
+
+      @Override
+      public void run() &#123;
+
+      &#125;
+  &#125;
+
+  //使用直接传入Thread
+  new Thread(new MyThread()).start();</code></pre>
+</li>
+</ul>
+<pre><code>    //2、匿名内部类实现
+    new Thread(new Runnable() &#123;
+        @Override
+        public void run() &#123;
+
+        &#125;
+    &#125;).start();</code></pre>
+<ul>
+<li><strong>Callable</strong>:实现<code>Callable</code>接口并指定返回的参数</li>
+</ul>
+<pre><code>    public class MyCallable implements Callable&lt;String&gt; &#123;
+
+        @Override
+        public String call() throws Exception &#123;
+            Thread.sleep(1000);
+            return &quot;hello&quot;;
+        &#125;
+    &#125;
+
+
+使用的时候需要通过FutureTask
+
+    Callable callable = new MyCallable();
+    FutureTask futureTask = new FutureTask&lt;&gt;(callable);
+    new Thread(futureTask).start();
+
+
+可以看到`Callable`接口和`Runnable`接口中实现方法的区别，
++ call()方法中可以指定一个返回值，可以通过FutureTask对象的get()来获取call()中的返回值，此方法会阻塞线程知道获得“将来”的结果，不调用此方法，主线程不会阻塞。
++ call()可以抛出受检查的异常</code></pre>
+<h3 id="3、常用函数"><a href="#3、常用函数" class="headerlink" title="3、常用函数"></a>3、常用函数</h3><ul>
+<li><p><code>sleep()</code> : 使当前线程（即调用该方法的线程）暂停执行一段时间，让其他线程有机会继续执行，但它并不释放对象锁。也就是说如果有synchronized同步快，其他线程仍然不能访问共享数据。</p>
+</li>
+<li><p><code>yield()</code> : 该方法与sleep()类似，只是不能由用户指定暂停多长时间，并且yield（）方法只能让同优先级的线程有执行的机会。</p>
+</li>
+<li><p><code>isAlive()</code>: 当前线程没有执行完run方法，即没有进入死亡状态的时候返回ture，<br>否则返回fasle。</p>
+</li>
+<li><p><code>currentThread()</code> : 返回当前正在使用CPU资源的线程。</p>
+</li>
+<li><p><code>start()</code>: 线程调用该方法将启动线程，使之从新建状态进入就绪队列排队，一旦轮到它来享用CPU资源时，就可以脱离创建它的线程独立开始自己的生命周期了。注意一个线程不能重复调用<code>start()</code>。</p>
+</li>
+<li><p><code>run()</code>: Thread类的run()方法与Runnable接口中的run()方法的功能和作用相同，都用来定义线程对象被调度之后所执行的操作</p>
+<blockquote>
+<p>为什么不能用run开启线程:run方法应该由系统自动调用，如果在主线程中调用就变成了同步方法。</p>
+</blockquote>
+</li>
+<li><p><code>join()</code>:线程合并，即该线程执行完毕才能继续执行调用join()方法所在的线程。</p>
+</li>
+<li><p><code>setPriority()</code>: 设置一个线程的优先级,范围是1~10。</p>
+</li>
+</ul>
+<h3 id="4、线程生命周期"><a href="#4、线程生命周期" class="headerlink" title="4、线程生命周期"></a>4、线程生命周期</h3><p>首先看一下下面这张较为经典的图</p>
+<p><img src="http://img.hellofhy.cn/19-1-12/56161691.jpg"></p>
+<ul>
+<li><strong>新建状态（New）</strong>：当程序使用new关键字创建了一个线程之后，该线程就处于新建状态，此时它和其他Java对象一样，仅仅由Java虚拟机为其分配了内存，并初始化了其成员变量值。此时的线程对象没有表现出任何线程的动态特征，程序也不会执行线程的线程执行体。</li>
+</ul>
+<ul>
+<li><p><strong>就绪状态（Runnable）</strong>：当线程对象调用了start()方法之后，该线程处于就绪状态，Java虚拟机会为其创建方法调用栈和程序计数器，处于这个状态的线程并没有开始运行，它只是表示该线程可以运行了。至于该线程何时开始运行，取决于JVM里线程调度器的调度。</p>
+</li>
+<li><p><strong>运行状态（Running）</strong>: 如果就绪状态的线程获取 CPU 资源，就可以执行 run()，此时线程便处于运行状态。处于运行状态的线程最为复杂，它可以变为阻塞状态、就绪状态和死亡状态。</p>
+</li>
+<li><p><strong>阻塞状态（Blocked）</strong>:阻塞状态是线程因为某种原因放弃CPU使用权，暂时停止运行。直到线程进入就绪状态，才有机会转到运行状态。阻塞的情况分三种</p>
+<ul>
+<li><p><strong>等待阻塞</strong>：运行的线程执行wait()方法，JVM会把该线程放入等待池中。</p>
+</li>
+<li><p><strong>同步阻塞</strong>：运行的线程在获取对象的<code>synchronized</code>同步锁时，若该同步锁被别的线程占用，则JVM会把该线程放入锁池中。</p>
+</li>
+<li><p><strong>其他阻塞</strong>：运行的线程执行sleep()或join()方法，或者发出了I/O请求时，JVM会把该线程置为阻塞状态。当sleep()状态超时、join()等待线程终止或者超时、或者I/O处理完毕时，线程重新转入就绪状态。</p>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><strong>死亡状态（Dead）</strong> : 线程会以以下三种方式之一结束，结束后就处于死亡状态<ul>
+<li>run()方法执行完成，线程正常结束。</li>
+<li>线程抛出一个未捕获的Exception或Error。</li>
+<li>直接调用该线程的stop()方法来结束该线程——该方法容易导致死锁，通常不推荐使用。</li>
+</ul>
+</li>
+</ul>
+<h3 id="5、线程分类"><a href="#5、线程分类" class="headerlink" title="5、线程分类"></a>5、线程分类</h3><ul>
+<li><p><strong>用户线程(User) :</strong> 非守护线程包括常规的用户线程或诸如用于处理GUI事件的事件调度线程，Java虚拟机在它所有非守护线程已经离开后自动离开。</p>
+</li>
+<li><p><strong>守护线程(Daemon) :</strong> 守护线程则是用来服务用户线程的，如果没有其他用户线程在运行，那么就没有可服务对象，也就没有理由继续下去。举例来说，JVM的垃圾回收**(GC线程)**、内存管理等线程都是守护线程。</p>
+<blockquote>
+<p>操作系统里面是没有所谓的守护线程的概念，只有守护进程一说，但是Java语言机制是构建在JVM的基础之上的，意思是Java平台把操作系统的底层给屏蔽起来，所以它可以在它自己的虚拟的平台里面构造出对 自己有利的机制，而语言或者说平台的设计者多多少少是受到Unix思想的影响，而守护线程机制又是对JVM这样的平台凑合，于是守护线程应运而生</p>
+</blockquote>
+</li>
+</ul>
+<h5 id="两者区别"><a href="#两者区别" class="headerlink" title="两者区别"></a>两者区别</h5><p>两者的区别之处在于虚拟机的离开，当JVM中所有的线程都是守护线程的时候，JVM就可以退出了（如果User Thread全部撤离，那么Daemon Thread也就没啥线程好服务的了，所以虚拟机也就退出了）；如果还有一个或以上的非守护线程则不会退出。（以上是针对正常退出，调用System.exit则必定会退出）。</p>
+<h5 id="开启一个守护线程"><a href="#开启一个守护线程" class="headerlink" title="开启一个守护线程"></a>开启一个守护线程</h5><p>守护线程与普通线程写法上基本没什么区别，调用线程对象的方法<code>setDaemon(true)</code>，则可以将其设置为守护线程。</p>
+<ul>
+<li><p><code>thread.setDaemon(true)</code>必须在<code>thread.start()</code>之前设置,你不能把正在运行的常规线程设置为守护线程,否则会跑出一个<code>IllegalThreadStateException</code>异常，如果线程是守护线程，则<code>isDaemon</code>方法返回true。</p>
+<blockquote>
+<p>这点与守护进程有着明显的区别，守护进程是创建后，让进程摆脱原会话的控制+让进程摆脱原进程组的控制+让进程摆脱原控制终端的控制；所以说寄托于虚拟机的语言机制跟系统级语言有着本质上面的区别</p>
+</blockquote>
+</li>
+</ul>
+<ul>
+<li>在Daemon线程中产生的新线程也是Daemon的。    <blockquote>
+<p>这一点又是有着本质的区别了：守护进程fork()出来的子进程不再是守护进程，尽管它把父进程的进程相关信息复制过去了，但是子进程的进程的父进程不是init进程，所谓的守护进程本质上说就是“父进程挂掉，init收养，然后文件0,1,2都是/dev/null，当前目录到/”</p>
+</blockquote>
+</li>
+</ul>
+<ul>
+<li>不是所有的应用都可以分配给Daemon线程来进行服务，比如读写操作或者计算逻辑。因为在Daemon Thread还没来的及进行操作时，虚拟机可能已经退出了。 </li>
+</ul>
+<p>例子:</p>
+<pre><code>public static void main(String[] args) throws InterruptedException &#123;
+
+    Thread thread = new Thread(new MyThread());
+    thread.setDaemon(true);
+    thread.start();
+&#125;
+
+
+static class MyThread implements Runnable &#123;
+
+    @Override
+    public void run() &#123;
+        try &#123;
+            Thread.sleep(1000);
+        &#125; catch (InterruptedException e) &#123;
+            e.printStackTrace();
+        &#125;
+        System.out.println(&quot;test&quot;);
+    &#125;
+&#125;</code></pre>
+<p>运行后会发现并没有输出任何内容，证明用户线程全部离开后，无论守护线程处于什么状态都会随之退出。</p>
+<h3 id="6、线程同步"><a href="#6、线程同步" class="headerlink" title="6、线程同步"></a>6、线程同步</h3><p>线程不安全的例子:</p>
+<pre><code>public class ThreadOne implements Runnable &#123;
+
+    public static int count = 0;
+
+    public void increase() &#123;
+        count++;
+    &#125;
+
+    @Override
+    public void run() &#123;
+        for (int i = 0; i &lt; 100000; i++) &#123;
+            increase();
+        &#125;
+    &#125;
+
+    public static void main(String[] args) throws InterruptedException &#123;
+        Thread t1 = new Thread(new ThreadOne());
+        Thread t2 = new Thread(new ThreadOne());
+        t1.start();
+        t2.start();
+        t1.join();
+        t2.join();
+        System.out.println(count);//输出结果为146066
+    &#125;
+&#125;</code></pre>
+<p>count++不是原子操作，该操作是先读取值，然后写回一个新值，相当于原来的值加上1。当线程1刚进行完第一步，线程2同样进行了第一步操作，这时获取到的count仍然是原来未增加的数值，当两者都完成第二步写入新值的时候，写入的其实是一样的值,这样就造成了数值的丢失，这时候就需要引入锁的机制，将多个线程能访问的方法变成同步方法。</p>
+<h4 id="1-synchronized"><a href="#1-synchronized" class="headerlink" title="(1)synchronized"></a>(1)synchronized</h4><p>synchronized是Java中的关键字，是一种同步锁。</p>
+<ul>
+<li><p>synchronized实例方法 ：同步方法，作用于当前实例，即进入同步代码会获得当前实例的锁(对象锁)。</p>
+</li>
+<li><p>synchronized静态方法 ：同步静态方法，作用于当前类，即进入同步代码会获得当前类对象的锁(类锁)。</p>
+</li>
+<li><p>synchronized()代码块：可以指定加锁对象，既可以是实例对象也可以是类对象。</p>
+</li>
+</ul>
+<ul>
+<li><p><strong>对象锁</strong>：Java的所有对象都含有1个互斥锁，这个锁由JVM自动获取和释放。线程进入synchronized方法的时候获取该对象的锁，当然如果已经有线程获取了这个对象的锁，那么当前线程会等待；synchronized方法正常返回或者抛异常而终止，JVM会自动释放对象锁。这里也体现了用synchronized来加锁的好处，方法抛异常的时候，锁仍然可以由JVM来自动释放。</p>
+</li>
+<li><p><strong>类锁</strong>：对象锁是用来控制实例方法之间的同步，类锁是用来控制静态方法（或静态变量互斥体）之间的同步。java类可能会有很多个对象，但是只有1个Class对象，也就是说类的不同实例之间共享该类的Class对象。Class对象其实也仅仅是1个 java对象，只不过有点特殊而已。由于每个java对象都有1个互斥锁，而类的静态方法是需要Class对象。所以所谓的类锁，不过是Class对象的锁而已。获取类的Class对象有好几种，最简单的就是MyClass.class的方式。 </p>
+</li>
+</ul>
+<blockquote>
+<p>一个是类的Class对象的锁，一个是类的实例的锁。也就是说：一个线程访问静态synchronized的时候，允许另一个线程访问对象的实例synchronized方法。反过来也是成立的，因为他们需要的锁是不同的。</p>
+</blockquote>
+<h4 id="2-死锁"><a href="#2-死锁" class="headerlink" title="(2)死锁"></a>(2)死锁</h4><p>当两个或两个以上进程在执行过程中，因争夺资源而造成的一种互相等待的现象，若无外力作用，它们将一直阻塞下去。</p>
+<p>例如：线程A当前持有互斥所锁lock1，线程B当前持有互斥锁lock2。接下来，当线程A仍然持有lock1时，它试图获取lock2，因为线程B正持有lock2，因此线程A会阻塞等待线程B对lock2的释放。如果此时线程B在持有lock2的时候，也在试图获取lock1，因为线程A正持有lock1，因此线程B会阻塞等待A对lock1的释放。二者都在等待对方所持有锁的释放，而二者却又都没释放自己所持有的锁，这时二者便会一直阻塞下去。这种情形称为死锁。</p>
+<p><strong>产生死锁的四个必要条件</strong>：</p>
+<ul>
+<li><p>互斥条件：一个资源每次只能被一个进程使用。</p>
+</li>
+<li><p>请求与保持条件：一个进程因请求资源而阻塞时，对已获得的资源保持不放。</p>
+</li>
+<li><p>不剥夺条件：进程已获得的资源，在未使用完之前，不能强行剥夺。</p>
+</li>
+<li><p>循环等待条件：若干进程之间形成一种头尾相接的循环等待资源关系。</p>
+</li>
+</ul>
+<p>写一个死锁的例子:</p>
+<pre><code>public class DeadClock &#123;
+
+    private static Object sLockA = new Object();
+
+    private static Object sLockB = new Object();
+
+    public static void main(String[] args) throws InterruptedException &#123;
+        new DeadClock().deadLock();
+    &#125;
+
+    @SuppressWarnings(&quot;all&quot;)
+    public void deadLock() &#123;
+
+        Thread t1 = new Thread(new Runnable() &#123;
+            @Override
+            public void run() &#123;
+                synchronized (sLockA) &#123;
+                    System.out.println(&quot;线程1获取A锁&quot;);
+                    try &#123;
+                        Thread.sleep(2000);
+                    &#125; catch (InterruptedException e) &#123;
+                        e.printStackTrace();
+                    &#125;
+
+                    System.out.println(&quot;线程1等待B锁释放&quot;);
+
+                    synchronized (sLockB) &#123;
+                        System.out.println(&quot;thread1...&quot;);
+                    &#125;
+                &#125;
+            &#125;
+        &#125;);
+
+        Thread t2 = new Thread(new Runnable() &#123;
+            @Override
+            public void run() &#123;
+                synchronized (sLockB) &#123;
+                    System.out.println(&quot;线程2获取B锁，等待A锁释放&quot;);
+                    synchronized (sLockA) &#123;
+                        System.out.println(&quot;thread2...&quot;);
+                    &#125;
+                &#125;
+            &#125;
+        &#125;);
+
+        t1.start();
+        t2.start();
+    &#125;
+&#125;</code></pre>
+<p>运行后程序出现死锁</p>
+<p><img src="http://img.hellofhy.cn/18-4-21/4196162.jpg"></p>
+<p>避免出现死锁的方式:</p>
+<ul>
+<li><p>避免一个线程同时获取多个锁</p>
+</li>
+<li><p>避免一个线程在锁内同时占用多个资源，尽量保证每个锁只占用一个资源</p>
+</li>
+<li><p>尝试使用定时锁，使用lock.tryLock来代替使用内置锁。</p>
+</li>
+</ul>
+<h4 id="3-wait、notify和notifyAll"><a href="#3-wait、notify和notifyAll" class="headerlink" title="(3)wait、notify和notifyAll"></a>(3)wait、notify和notifyAll</h4><ul>
+<li><p>wait()、notify/notifyAll() 方法是Object的本地final方法，无法被重写。</p>
+</li>
+<li><p>一般在synchronized 同步代码块里使用 wait()、notify/notifyAll() 方法。</p>
+</li>
+<li><p>由于 wait()、notify/notifyAll() 在synchronized 代码块执行，说明当前线程一定是获取了锁的。<br>当线程执行wait()方法时候，会释放当前的锁，然后让出CPU，进入等待状态。<br>只有当 notify/notifyAll() 被执行时候，才会唤醒一个或多个正处于等待状态的线程，然后继续往下执行，直到执行完synchronized 代码块的代码或是中途遇到wait() ，再次释放锁。<br>也就是说，notify/notifyAll() 的执行只是唤醒沉睡的线程，而不会立即释放锁，锁的释放要看代码块的具体执行情况。所以在编程中，尽量在使用了notify/notifyAll() 后立即退出临界区，以唤醒其他线程 </p>
+</li>
+</ul>
+<ul>
+<li><p><code>wait</code>：使持有该对象的线程把该对象的控制权交出去，然后处于等待状态（也就是说当调用wait的时候会释放锁并处于等待的状态）</p>
+</li>
+<li><p><code>notify</code>：通知某个正在等待这个对象的控制权的线程可以继续运行（这个就是获取锁，使自己的程序开始执行，最后通过notify同样去释放锁，并唤醒正在等待的线程）</p>
+</li>
+<li><p><code>notifyAll</code>:会通知所有等待这个对象控制权的线程继续运行(和上面一样，只不过是唤醒所有等待的线程继续执行)</p>
+</li>
+</ul>
+<p>这个就好了，从上面的解释我们可以看出通过wait和notify可以做线程之间的通信，当A线程处理完毕通知B线程执行，B线程执行完毕以后A线程可以继续执行。</p>
+<p><strong>实例 : 生产者消费者模型</strong></p>
+<p>基于等待/通知机制。生产者/消费者模型描述的是有一块缓冲区作为仓库，生产者可将产品放入仓库，消费者可以从仓库中取出产品，生产者/消费者模型关注的是以下几个点：</p>
+<ul>
+<li><p>一个生产者或消费者工作的时候其他人不能工作。</p>
+</li>
+<li><p>缓冲区空时消费者不能消费</p>
+</li>
+<li><p>缓冲区满时生产者不能生产</p>
+</li>
+</ul>
+<p><img src="http://img.hellofhy.cn/18-4-21/5146865.jpg"></p>
+<p><img src="http://img.hellofhy.cn/18-4-21/14097141.jpg"></p>
+<h4 id="4-volatile"><a href="#4-volatile" class="headerlink" title="(4)volatile"></a>(4)volatile</h4><p>volatile是java中一种轻量级的同步机制，它的作用是保证线程之间共享变量的可见性，当线程A修改了一个volatile修饰的共享变量之后，线程B会读取该变量时，会获得一个修改后的正确值。</p>
+<p><strong>(1)如何保证内存可见性</strong>: 在java虚拟机的内存模型中，有主内存和工作内存的概念，每个线程对应一个工作内存，并共享主内存的数据。</p>
+<ul>
+<li><p>对于普通变量：读操作会优先读取工作内存的数据，如果工作内存中不存在，则从主内存中拷贝一份数据到工作内存中；写操作只会修改工作内存的副本数据，这种情况下，其它线程就无法读取变量的最新值。</p>
+</li>
+<li><p>对于volatile变量，读操作时JMM会把工作内存中对应的值设为无效，要求线程从主内存中读取数据；写操作时JMM会把工作内存中对应的数据刷新到主内存中，这种情况下，其它线程就可以读取变量的最新值。</p>
+</li>
+</ul>
+<p><strong>(2)不能保证原子性</strong>: volatile关键字虽然能保证变量在线程间的可见性，但是并不能保证原子性。</p>
+<p>原子性指的是一个操作具有在执行过程中不会被任何因素打断的性质。在Java中，对基本数据类型的变量的读取和赋值操作是原子性操作，即这些操作是不可被中断的，要么执行，要么不执行。例如 <code>i=0</code> 这个操作是不可分割的，所以是原子操作，但是i++则不是，他的操作分为三步：</p>
+<ul>
+<li>从主内存中取出i的值</li>
+<li>i自增1</li>
+<li>将i存到主内存</li>
+</ul>
+<p>原子性的线程不安全在介绍synchronized时已经说过，下面来看看volatile为什么不能保证原子操作的线程安全:</p>
+<pre><code>public class Test &#123;
+
+    public volatile int inc = 0;
+
+    public void increase() &#123;
+        inc++;
+    &#125;
+
+    public static void main(String[] args) &#123;
+        final Test test = new Test();
+        for (int i = 0; i &lt; 10; i++) &#123;
+
+            new Thread(new Runnable() &#123;
+                @Override
+                public void run() &#123;
+                    for (int j = 0; j &lt; 1000; j++) &#123;
+                        test.increase();
+                    &#125;
+                &#125;
+            &#125;).start();
+
+        &#125;
+        while (Thread.activeCount() &gt; 1) &#123;
+            Thread.yield();
+        &#125;
+
+        System.out.println(test.inc);//输出值为9933
+    &#125;
+&#125;</code></pre>
+<p>虽然volatile可以让每个线程读取的变量都是最新的，但是可以看到，依然不能保证线程安全,下面进行一下模拟:</p>
+<ul>
+<li>目前inc的值为10，线程1从主工作区中获取最新值，但是还没有来得及进行自增操作就线程1就进入阻塞状态</li>
+<li>此时线程2开始进入运行状态，从主工作区中获取inc的值依然为10，自增后写入主工作区，之后进入阻塞状态。</li>
+<li>线程1重新进入运行状态，完成自增并写入工作区内存。</li>
+</ul>
+<p>这时候inc的值为11，说明volatile无法保证原子操作的线程安全。</p>
+<p><strong>(3)保证有序性</strong>：</p>
+<p><strong>什么是指令重排</strong> : 指令重排序是JVM为了优化指令，提高程序运行效率，在不影响单线程程序执行结果的前提下，尽可能地提高并行度。编译器、处理器也遵循这样一个目标。注意是单线程。多线程的情况下指令重排序就会给程序员带来问题。</p>
+<p>不同的指令间可能存在数据依赖。比如下面计算圆的面积的语句：</p>
+<pre><code>double r = 2.3d;//(1)
+
+double pi =3.1415926; //(2)
+
+double area = pi* r * r; //(3)</code></pre>
+<p>area的计算依赖于r与pi两个变量的赋值指令。而r与pi无依赖关系，即计算顺序(1)(2)(3)与(2)(1)(3) 对于r、pi、area变量的结果并无区别。编译器、Runtime在优化时可以根据情况重排序（1）与（2），而丝毫不影响程序的结果。但要注意的是指令重排必须要在不影响最终结果的前提下进行。</p>
+<p>volatile的另一个特点便是能够禁止指令重排，从而在一定程度上保证程序的有序性:</p>
+<ul>
+<li>当程序执行到volatile变量的读操作或者写操作时，在其前面的操作的更改肯定全部已经进行，且结果已经对后面的操作可见；在其后面的操作一定还未进行</li>
+<li>在进行指令优化时，不能将在对volatile变量的读操作或者写操作的语句放在其后面执行，也不能把volatile变量后面的语句放到其前面执行。</li>
+</ul>
+<pre><code>    public static int a,b;
+    public static volatile boolean c;
+
+    public static void main(String[] args) &#123;
+
+        a = 1; //语句1
+        b = 2; //语句2
+        c = true; //语句3
+        a = 3; //语句4
+        b = 4; //语句5
+    &#125;</code></pre>
+<p>在指令重排的过程中，语句3不会在语句1或者语句2的前面执行，也不会在语句4或者语句5的后面执行，但是1和2之间以及4和5之间的顺序依然是不能保证的。同时当语句1、2执行完之后的结果对语句3、4、5都是可见的。</p>
+<h3 id="7、线程局部变量ThreadLocal"><a href="#7、线程局部变量ThreadLocal" class="headerlink" title="7、线程局部变量ThreadLocal"></a>7、线程局部变量ThreadLocal</h3><p>ThreadLocal是一个关于创建线程局部变量的类。ThreadLocal会为每一个线程提供一个独立的变量副本，从而隔离了多个线程对数据的访问冲突。因为每一个线程都拥有自己的变量副本，从而也就没有必要对该变量进行同步了。</p>
+<p>具体的实现原理我们来看一看这两个类的get()和set()方法源码</p>
+<pre><code>public void set(T value) &#123;  
+       Thread t = Thread.currentThread();  
+       ThreadLocalMap map = getMap(t);  
+       if (map != null)  
+           map.set(this, value);  
+       else  
+           createMap(t, value);  
+&#125;  </code></pre>
+<p>set方法首先通过<code>Thread.currentThread()</code>方法来获取当前线程，然后取出当前线程对象的成员变量<code>ThreadLocalMap</code>,如果存在就设置键值对，其中key为ThreadLocal本身，value为想要设置的值，如果不存在就创建一个</p>
+<pre><code>public T get() &#123;  
+    Thread t = Thread.currentThread();  
+    ThreadLocalMap map = getMap(t);  
+    if (map != null) &#123;  
+        ThreadLocalMap.Entry e = map.getEntry(this);  
+        if (e != null) &#123;  
+            T result = (T)e.value;  
+            return result;  
+        &#125;  
+    &#125;  
+    return setInitialValue();  
+&#125;
+
+ThreadLocalMap getMap(Thread t) &#123;
+    return t.threadLocals;
+&#125;  </code></pre>
+<p>然后来看看get方法，从代码中可以看出ThreadLocalMap中存放的就是Entry，Entry的KEY就是ThreadLocal，VALUE就是值。而map是从Thread t中获得的。也就是说map虽然是在threadlocal的内部类，但是却是保存在Thread中的。</p>
+<p>下面来看一下使用场景:</p>
+<p><img src="http://img.hellofhy.cn/18-4-22/40318473.jpg"></p>
+<p><img src="http://img.hellofhy.cn/18-4-22/82361554.jpg"></p>
+<p>可以看到在不同的线程中创建了独立的变量副本。</p>
+<h3 id="8、线程池"><a href="#8、线程池" class="headerlink" title="8、线程池"></a>8、线程池</h3><p>在开发过程中，不推荐显示的创建新线程，而是推荐使用线程池的方法进行线程的处理，这样可以避免频繁的创建销毁线程带来的资源的损耗，<br>在java中线程池的实现类为<code>ThreadPoolExecutor</code> ，其构造方法的参数为:</p>
+<pre><code>ThreadPoolExecutor mExecutor = new ThreadPoolExecutor(corePoolSize,// 核心线程数  
+                        maximumPoolSize, // 最大线程数  
+                        keepAliveTime, // 闲置线程存活时间  
+                        TimeUnit.MILLISECONDS,// 时间单位  
+                        new LinkedBlockingDeque&lt;Runnable&gt;(),// 线程队列  
+                        Executors.defaultThreadFactory(),// 线程工厂  
+                        new AbortPolicy()// 队列已满,而且当前线程数已经超过最大线程数时的异常处理策略  
+                );  </code></pre>
+<p>可以直接创建java中四种配置好参数的线程池:</p>
+<ul>
+<li><strong>FixedThreadPool</strong> : 创建固定大小的线程池。每次提交一个任务就创建一个线程，直到线程达到线程池的最大大小。线程池的大小一旦达到最大值就会保持不变，新添加的会被加入到任务队列中。如果某个线程因为执行异常而结束，那么线程池会补充一个新线程。</li>
+</ul>
+<ul>
+<li><p><strong>CachedThreadPool</strong>: 创建一个可缓存线程池，如果线程池长度超过处理需要，可灵活回收空闲线程，若无可回收，则新建线程。</p>
+<ul>
+<li>工作线程的创建数量几乎没有限制(其实也有限制的,数目为Interger. MAX_VALUE), 这样可灵活的往线程池中添加线程。</li>
+<li>如果长时间没有往线程池中提交任务，即如果工作线程空闲了指定的时间(默认为1分钟)，则该工作线程将自动终止。终止后，如果你又提交了新的任务，则线程池重新创建一个工作线程。</li>
+<li>在使用CachedThreadPool时，一定要注意控制任务的数量，否则，由于大量线程同时运行，很有会造成系统瘫痪。</li>
+</ul>
+</li>
+<li><p><strong>ScheduledThreadPool</strong>:一个大小无限的线程池。此线程池支持定时以及周期性执行任务的需求。</p>
+</li>
+<li><p><strong>SingleThreadExecutor</strong>: 创建一个单线程的线程池。这个线程池只有一个线程在工作，也就是相当于单线程串行执行所有任务。如果这个唯一的线程因为异常结束，那么会有一个新的线程来替代它。此线程池保证所有任务的执行顺序按照任务的提交顺序执行。</p>
+</li>
+</ul>
+<p>学习博客:</p>
+<p><a target="_blank" rel="noopener" href="https://juejin.im/post/5ad1adea6fb9a028c67624e9">Java 之 volatile 详解</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/javazejian/article/details/72828483">深入理解Java并发之synchronized实现原理</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/195ae7c77afe">java volatile关键字解惑</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/WuXuanKun/p/5827060.html">ThreadLocal用法和实现原理</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/luoweifu/article/details/46595285">编程思想之多线程与多进程</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/2116fff869b6">深入理解并发/并行，阻塞/非阻塞，同步/异步</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+              <a href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" rel="tag"># 多线程</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/03/31/%E8%80%81%E7%94%9F%E5%B8%B8%E8%B0%88%E2%80%94%E2%80%94activity%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%92%8C%E5%90%AF%E5%8A%A8%E6%A8%A1%E5%BC%8F/" rel="prev" title="老生常谈——activity生命周期">
+      <i class="fa fa-chevron-left"></i> 老生常谈——activity生命周期
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/05/01/Java%E5%9F%BA%E7%A1%80%E4%B9%8B-JVM-%E7%B1%BB%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6/" rel="next" title="Java基础之-JVM-类加载机制">
+      Java基础之-JVM-类加载机制 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E3%80%81%E8%BF%9B%E7%A8%8B%E5%92%8C%E7%BA%BF%E7%A8%8B"><span class="nav-number">1.</span> <span class="nav-text">1、进程和线程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E3%80%81%E4%BD%BF%E7%94%A8%E5%A4%9A%E7%BA%BF%E7%A8%8B"><span class="nav-number">2.</span> <span class="nav-text">2、使用多线程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3%E3%80%81%E5%B8%B8%E7%94%A8%E5%87%BD%E6%95%B0"><span class="nav-number">3.</span> <span class="nav-text">3、常用函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4%E3%80%81%E7%BA%BF%E7%A8%8B%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F"><span class="nav-number">4.</span> <span class="nav-text">4、线程生命周期</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5%E3%80%81%E7%BA%BF%E7%A8%8B%E5%88%86%E7%B1%BB"><span class="nav-number">5.</span> <span class="nav-text">5、线程分类</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%B8%A4%E8%80%85%E5%8C%BA%E5%88%AB"><span class="nav-number">5.0.1.</span> <span class="nav-text">两者区别</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%BC%80%E5%90%AF%E4%B8%80%E4%B8%AA%E5%AE%88%E6%8A%A4%E7%BA%BF%E7%A8%8B"><span class="nav-number">5.0.2.</span> <span class="nav-text">开启一个守护线程</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6%E3%80%81%E7%BA%BF%E7%A8%8B%E5%90%8C%E6%AD%A5"><span class="nav-number">6.</span> <span class="nav-text">6、线程同步</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-synchronized"><span class="nav-number">6.1.</span> <span class="nav-text">(1)synchronized</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-%E6%AD%BB%E9%94%81"><span class="nav-number">6.2.</span> <span class="nav-text">(2)死锁</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-wait%E3%80%81notify%E5%92%8CnotifyAll"><span class="nav-number">6.3.</span> <span class="nav-text">(3)wait、notify和notifyAll</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-volatile"><span class="nav-number">6.4.</span> <span class="nav-text">(4)volatile</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7%E3%80%81%E7%BA%BF%E7%A8%8B%E5%B1%80%E9%83%A8%E5%8F%98%E9%87%8FThreadLocal"><span class="nav-number">7.</span> <span class="nav-text">7、线程局部变量ThreadLocal</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8%E3%80%81%E7%BA%BF%E7%A8%8B%E6%B1%A0"><span class="nav-number">8.</span> <span class="nav-text">8、线程池</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">fhyPayaso</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">18</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">categories</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">fhyPayaso</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

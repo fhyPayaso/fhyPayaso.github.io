@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="老生常谈——activity生命周期对于activity的七个声生命周期回调，总是被大家翻来覆去的说，甚至说的都有些厌烦了，这部分知识虽然基础但也很重要，谁都不想在面试的时候只说出个一知半解，下面的分析是对阅读《安卓开发艺术探索》第一章后的整理和思考。 一、正常情况下的生命周期分析先来上一张大家都熟悉的流程图,来复习一遍活动的生命周期  然后来简单说说这七个回调方法  onCreate : act">
+<meta property="og:type" content="article">
+<meta property="og:title" content="老生常谈——activity生命周期">
+<meta property="og:url" content="http://example.com/2018/03/31/%E8%80%81%E7%94%9F%E5%B8%B8%E8%B0%88%E2%80%94%E2%80%94activity%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%92%8C%E5%90%AF%E5%8A%A8%E6%A8%A1%E5%BC%8F/index.html">
+<meta property="og:site_name" content="fhyPayaso&#39;s Blog">
+<meta property="og:description" content="老生常谈——activity生命周期对于activity的七个声生命周期回调，总是被大家翻来覆去的说，甚至说的都有些厌烦了，这部分知识虽然基础但也很重要，谁都不想在面试的时候只说出个一知半解，下面的分析是对阅读《安卓开发艺术探索》第一章后的整理和思考。 一、正常情况下的生命周期分析先来上一张大家都熟悉的流程图,来复习一遍活动的生命周期  然后来简单说说这七个回调方法  onCreate : act">
+<meta property="og:locale">
+<meta property="og:image" content="http://img.hellofhy.cn/18-3-31/73503926.jpg">
+<meta property="og:image" content="http://img.hellofhy.cn/18-3-31/4680139.jpg">
+<meta property="og:image" content="http://img.hellofhy.cn/18-3-31/44951459.jpg">
+<meta property="og:image" content="http://img.hellofhy.cn/18-3-31/40345760.jpg">
+<meta property="og:image" content="http://img.hellofhy.cn/18-3-31/48233598.jpg">
+<meta property="og:image" content="http://img.hellofhy.cn/18-3-31/53627709.jpg">
+<meta property="og:image" content="http://img.hellofhy.cn/18-4-1/71262516.jpg">
+<meta property="og:image" content="http://img.hellofhy.cn/18-4-1/20324066.jpg">
+<meta property="og:image" content="http://img.hellofhy.cn/18-4-2/55270989.jpg">
+<meta property="og:image" content="http://img.hellofhy.cn/18-4-1/21672515.jpg">
+<meta property="og:image" content="http://img.hellofhy.cn/18-4-2/56109014.jpg">
+<meta property="og:image" content="http://img.hellofhy.cn/18-4-2/66489532.jpg">
+<meta property="og:image" content="http://img.hellofhy.cn/18-4-2/33022579.jpg">
+<meta property="og:image" content="http://img.hellofhy.cn/18-4-2/73842158.jpg">
+<meta property="article:published_time" content="2018-03-31T13:56:45.000Z">
+<meta property="article:modified_time" content="2020-12-29T08:29:27.425Z">
+<meta property="article:author" content="fhyPayaso">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="面试">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://img.hellofhy.cn/18-3-31/73503926.jpg">
+
+<link rel="canonical" href="http://example.com/2018/03/31/%E8%80%81%E7%94%9F%E5%B8%B8%E8%B0%88%E2%80%94%E2%80%94activity%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%92%8C%E5%90%AF%E5%8A%A8%E6%A8%A1%E5%BC%8F/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'cn'
+  };
+</script>
+
+  <title>老生常谈——activity生命周期 | fhyPayaso's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">fhyPayaso's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="cn">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/03/31/%E8%80%81%E7%94%9F%E5%B8%B8%E8%B0%88%E2%80%94%E2%80%94activity%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%92%8C%E5%90%AF%E5%8A%A8%E6%A8%A1%E5%BC%8F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="fhyPayaso">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="fhyPayaso's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          老生常谈——activity生命周期
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-03-31 21:56:45" itemprop="dateCreated datePublished" datetime="2018-03-31T21:56:45+08:00">2018-03-31</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-12-29 16:29:27" itemprop="dateModified" datetime="2020-12-29T16:29:27+08:00">2020-12-29</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="老生常谈——activity生命周期"><a href="#老生常谈——activity生命周期" class="headerlink" title="老生常谈——activity生命周期"></a>老生常谈——activity生命周期</h2><p>对于activity的七个声生命周期回调，总是被大家翻来覆去的说，甚至说的都有些厌烦了，这部分知识虽然基础但也很重要，谁都不想在面试的时候只说出个一知半解，下面的分析是对阅读《安卓开发艺术探索》第一章后的整理和思考。</p>
+<h3 id="一、正常情况下的生命周期分析"><a href="#一、正常情况下的生命周期分析" class="headerlink" title="一、正常情况下的生命周期分析"></a>一、正常情况下的生命周期分析</h3><p>先来上一张大家都熟悉的流程图,来复习一遍活动的生命周期</p>
+<p><img src="http://img.hellofhy.cn/18-3-31/73503926.jpg"></p>
+<p>然后来简单说说这七个回调方法</p>
+<ul>
+<li><p><strong>onCreate</strong> : activity被创建时调用，一般在这个方法中进行活动的初始化工作，如设置布局文件、加载数据、绑定控件等。</p>
+</li>
+<li><p><strong>onStart</strong> : 经历该回调后，activity由不可见变为可见，但此时处于后台可见，还不能和用户进行交互。</p>
+</li>
+<li><p><strong>onResume</strong> : 已经可见的activity从后台来到前台,可以和用户进行交互。</p>
+</li>
+</ul>
+<ul>
+<li><strong>onPause</strong> : 当用户启动了新的activity,原来的activity不再处于前台,也无法和用户进行交互，并且紧接着就会调用<code>onStop()</code>方法，但如果用户这时立刻按返回键回到原activity，就会调用<code>onResume()</code>方法让活动重新回到前台。而且在官方文档中给出了说明，不允许在<code>onPause()</code>方法中执行耗时操作，因为这会影响到新activity的启动，具体原因我们在后面分析。</li>
+</ul>
+<ul>
+<li><p><strong>onStop</strong> : 这个回调代表了activity由可见变为完全不可见，在这里可以进行一些稍微重量级的操作。需要注意的是，处于<code>onPause()</code>和<code>onStop()</code>回调后的activity优先级很低，当有优先级更高的应用需要内存时，该应用就会被杀死，那么当再次返回原activity的时候，会重新调用activity的<code>onCreate()</code>方法。</p>
+</li>
+<li><p><strong>onDestroy</strong> : 来到了这个回调，说明activity即将被销毁，应该将资源的回收和释放工作在该方法中执行。</p>
+</li>
+<li><p><strong>onRestart</strong> : 这个回调代表了activity由完全不可见重新变为可见的过程，当activity经历了<code>onStop()</code>回调变为完全不可见后，如果用户返回原activity，便会触发该回调，并且紧接着会触发<code>onStart()</code>来使活动重新可见。</p>
+</li>
+</ul>
+<p>想必大家已经对这个过程非常熟悉了，下面我们通过一些实际的场景来更加深入的理解一下活动的启动流程。</p>
+<h4 id="1、-由活动A启动活动B时，活动A的onPause-与活动B的onResume-哪一个先执行？"><a href="#1、-由活动A启动活动B时，活动A的onPause-与活动B的onResume-哪一个先执行？" class="headerlink" title="1、 由活动A启动活动B时，活动A的onPause()与活动B的onResume()哪一个先执行？"></a>1、 由活动A启动活动B时，活动A的<code>onPause()</code>与活动B的<code>onResume()</code>哪一个先执行？</h4><p>下面创建两个正常的活动<code>MainActivity</code>和<code>FirstActivity</code>,在<code>MainActivity</code>中设置按钮点击进入<code>FirstActivity</code>,看看会发生什么:</p>
+<p><img src="http://img.hellofhy.cn/18-3-31/4680139.jpg"></p>
+<p>可以看到，是旧的Activity先执行<code>onPause</code>,新活动才开始启动。下面点击返回按钮:</p>
+<p><img src="http://img.hellofhy.cn/18-3-31/44951459.jpg"></p>
+<p>点击返回后，同样是新Activity先执行<code>onPause</code>，旧的活动才开始重新启动，进行<code>onRestart-&gt;onStart-&gt;onResume</code>的流程，也就是说当发生活动切换时，是原活动先执行<code>onPause</code>，然后紧接着目标活动开始创建或重新启动。</p>
+<h4 id="2、dialog是否会对生命周期产生影响"><a href="#2、dialog是否会对生命周期产生影响" class="headerlink" title="2、dialog是否会对生命周期产生影响"></a>2、dialog是否会对生命周期产生影响</h4><p>从定义上来说，如果一个活动不在前台，也并非完全不可见，这个活动就会处在<code>onPause()</code>的暂停状态，我们来模拟一下这种情况，在<code>MainActivity</code>中设置三个按钮，第一个按钮点击后会弹出一个标准的<code>AlertDialog</code>，第二个按钮会弹出一个全屏的<code>AlertDialog</code>,第三个按钮点击会出现一个主题为<code>Theme.AppCompat.Dialog</code>的activity然后观察生命周期的变化：</p>
+<p><img src="http://img.hellofhy.cn/18-3-31/40345760.jpg"></p>
+<p>首先可以看到，无论是正常的dialog还是全屏的dialog，活动依然维持在<code>onResume()</code>的状态，说明单纯的dialog并不会引起生命周期的变化。下面来看dialog主题的activity:</p>
+<p><img src="http://img.hellofhy.cn/18-3-31/48233598.jpg"></p>
+<p>在启动<code>DialogActivity</code>后，原来的活动进入<code>onPause()</code>，新活动正常进行<code>onCreate-&gt;onStart-&gt;onResume</code>的流程，而原来的活动因为并没有完全不可见，所以也没有执行<code>onStop</code>，事实上除了dialog主题的活动，一些透明主题的活动也能达到同样的效果，接下来我们点击返回按钮:</p>
+<p><img src="http://img.hellofhy.cn/18-3-31/53627709.jpg"></p>
+<p>由于<code>MainActivity</code>根本没有进入<code>onStop</code>的状态，所以返回时也不会进行<code>onRestart-&gt;onStart</code>的流程，而是直接<code>onResume</code>回到前台。</p>
+<h3 id="二、异常状态下活动的生命周期"><a href="#二、异常状态下活动的生命周期" class="headerlink" title="二、异常状态下活动的生命周期"></a>二、异常状态下活动的生命周期</h3><p>当活动在运行过程中发生了某些异常情况时，上述所讨论的生命周期流程可能会受到影响，这里主要讨论两种异常情况。</p>
+<h4 id="1、资源配置改变导致activity重建"><a href="#1、资源配置改变导致activity重建" class="headerlink" title="1、资源配置改变导致activity重建"></a>1、资源配置改变导致activity重建</h4><p>最常见的一种情况就是横竖屏的切换导致资源的变化，当程序启动时，会根据不同的配置加载不同的资源，例如横竖屏两个状态对应着两张不同的资源图片。如果在应用使用过程中屏幕突然旋转，那么activity就会因为系统配置发生改变而销毁重建，加载合适的资源。</p>
+<h5 id="1-数据保存"><a href="#1-数据保存" class="headerlink" title="(1) 数据保存"></a>(1) 数据保存</h5><p>对于活动重新创建，我们如何保证activity中的已有数据不丢失呢，系统为我们提供了<code>onSaveInstanceState</code>和<code>onRestoreInstanceState</code>来保存和获取数据。</p>
+<pre><code>@Override
+protected void onSaveInstanceState(Bundle outState) &#123;
+    super.onSaveInstanceState(outState);
+    Log.i(TAG, &quot;onSaveInstanceState: &quot;);
+&#125;
+
+@Override
+protected void onRestoreInstanceState(Bundle savedInstanceState) &#123;
+    super.onRestoreInstanceState(savedInstanceState);
+    Log.i(TAG, &quot;onRestoreInstanceState: &quot;);
+&#125;</code></pre>
+<p><img src="http://img.hellofhy.cn/18-4-1/71262516.jpg"></p>
+<p>在活动异常销毁之前，系统会调用<code>onSaveInstanceState</code>，我们可以在<code>Bundle</code>类型的参数中保存想要的信息，之后这个<code>Bundle</code>对象会作为参数传递给<code>onRestoreInstanceState</code>和<code>onCreat</code>方法，这样在重新创建时就可以获取数据了。关于这两个方法，有几点需要注意的地方：</p>
+<ul>
+<li><p><code>onSaveInstanceState</code>方法的调用时机是在<code>onStop</code>之前，与<code>onPause</code>没有固定的时序关系。而<code>onRestoreInstanceState</code>方法则是在<code>onStart</code>之后调用。</p>
+</li>
+<li><p>正常情况下的活动销毁并不会调用这两个方法，只有当活动异常销毁并且有机会重新展示的时候才会进行调用，除了资源配置的改变外，activity因内存不足被销毁也是通过这两个方法保存数据。</p>
+</li>
+<li><p>在<code>onRestoreInstanceState</code>和<code>onCreat</code>都可以进行数据恢复工作，但是根据官方文档建议采用在<code>onRestoreInstanceState</code>中去恢复。</p>
+</li>
+<li><p>在<code>onRestoreInstanceState</code>和<code>onRestoreInstanceState</code>这两个方法中，系统会默认为我们进行一定的恢复工作，例如<code>EditText</code>中的文本信息、<code>ListView</code>中的滚动位置等，下面对一些控件观察实际保存效果。</p>
+<ul>
+<li><p><code>EditText</code>:个人在对<code>EditText</code>实验的时候，发现转屏后文本信息并没有被保存，经过查询，发现了这样一句话：</p>
+<blockquote>
+<p>“Note: In order for the Android system to restore the state of the views in your activity, each view must have a unique ID, supplied by the android:id attribute.”<br>Android系统存储和还原View的状态必须有一个唯一的ID</p>
+</blockquote>
+<p>  果然加上id之后<code>EditText</code>中的信息可以被自动保存了。</p>
+</li>
+<li><p><code>TextView</code>:这里指的是通过<code>setText</code>方法动态设置文本内容，在这种情况下即使加了id也无法自动保存，这种情况可以通过给<code>TextView</code>设置<code>freezesText</code>属性才能自动保存，当然这条属性对<code>EditText</code>也同样适用。</p>
+</li>
+</ul>
+</li>
+</ul>
+<h5 id="2-防止重建"><a href="#2-防止重建" class="headerlink" title="(2) 防止重建"></a>(2) 防止重建</h5><p>我们已经知道默认情况下，资源配置改变会导致活动的重新创建，但我们可以通过对活动<code>android:configChanges</code>属性的设置使活动防止重新被创建，我们来看看这个属性中有哪些内容:</p>
+<table>
+<thead>
+<tr>
+<th align="left">属性值</th>
+<th align="left">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">mcc</td>
+<td align="left">SIM卡唯一标识IMSI(国际移动用户标识码)中的国家代码，由三位数字组成，中国为：460 这里标识mcc代码发生了改变</td>
+</tr>
+<tr>
+<td align="left">mnc</td>
+<td align="left">SIM卡唯一标识IMSI(国际移动用户标识码)中的运营商代码，有两位数字组成，中国移动TD系统为00，中国联通为01,电信为03,此项标识mnc发生了改变</td>
+</tr>
+<tr>
+<td align="left">locale</td>
+<td align="left">设备的本地位置发生了改变，一般指的是切换了系统语言</td>
+</tr>
+<tr>
+<td align="left">touchscreen</td>
+<td align="left">触摸屏发生了改变</td>
+</tr>
+<tr>
+<td align="left">keyboard</td>
+<td align="left">键盘类型发生了改变，比如用户使用了外接键盘</td>
+</tr>
+<tr>
+<td align="left">keyboardHidden</td>
+<td align="left">键盘的可访问性发生了改变，比如用户调出了键盘</td>
+</tr>
+<tr>
+<td align="left">navigation</td>
+<td align="left">系统导航方式发生了改变</td>
+</tr>
+<tr>
+<td align="left">screenLayout</td>
+<td align="left">屏幕布局发生了改变，很可能是用户激活了另外一个显示设备</td>
+</tr>
+<tr>
+<td align="left">fontScale</td>
+<td align="left">系统字体缩放比例发生了改变，比如用户选择了个新的字号</td>
+</tr>
+<tr>
+<td align="left">uiMode</td>
+<td align="left">用户界面模式发生了改变，比如开启夜间模式-API8新添加</td>
+</tr>
+<tr>
+<td align="left">orientation</td>
+<td align="left">屏幕方向发生改变，比如旋转了手机屏幕</td>
+</tr>
+<tr>
+<td align="left">screenSize</td>
+<td align="left">当屏幕尺寸信息发生改变(当编译选项中的minSdkVersion和targeSdkVersion均低于13时不会导致Activity重启)API13新添加</td>
+</tr>
+<tr>
+<td align="left">smallestScreenSize</td>
+<td align="left">设备的物理屏幕尺寸发生改变，这个和屏幕方向没关系，比如切换到外部显示设备-API13新添加</td>
+</tr>
+<tr>
+<td align="left">layoutDirection</td>
+<td align="left">当布局方向发生改变的时候，正常情况下无法修改布局的layoutDirection的属性-API17新添加</td>
+</tr>
+</tbody></table>
+<p>如果不希望某些资源配置改变时活动被重建，只需在<code>manifest</code>中为相应活动添加属性即可，例如           <code>configChanges=&quot;orientation&quot;</code>可以防止横竖屏引发的重启，然而事实上单加这条属性并没有什么效果，因为在api13之后，新添加的属性<code>screenSize</code>属性也会跟着设备的横竖切换而改变,所以正确的配置应该是<code>configChanges=&quot;orientation|screenSize&quot;</code>;而在api13之前，正确的配置应该是<code>configChanges=&quot;orientation|keyboardHidden&quot;</code></p>
+<p>这里还要介绍一个重写方法<code>onConfigurationChanged</code>,用来监听资源配置的改变，这个方法只有在设置了<code>configChanges</code>并且相应的属性发生了变化时才会被调用，</p>
+<pre><code>@Override
+public void onConfigurationChanged(Configuration newConfig) &#123;
+    super.onConfigurationChanged(newConfig);
+    //监听横竖屏的变化
+    Log.i(TAG, &quot;onConfigurationChanged: &quot;+newConfig.orientation);
+&#125;</code></pre>
+<h4 id="2、低优先级的activity由于内存不足被杀死"><a href="#2、低优先级的activity由于内存不足被杀死" class="headerlink" title="2、低优先级的activity由于内存不足被杀死"></a>2、低优先级的activity由于内存不足被杀死</h4><p>这种情况的数据保存方法和上一种情况相同，在这里简单说一下系统回收进程的优先级:</p>
+<h5 id="1-前台进程："><a href="#1-前台进程：" class="headerlink" title="(1) 前台进程："></a>(1) 前台进程：</h5><ul>
+<li>持有用户正在交互的activity，即生命周期处于<code>onResume</code>状态的活动。</li>
+<li>该进程有绑定到正在交互的Activity的service或前台service。</li>
+</ul>
+<h5 id="2-可见进程"><a href="#2-可见进程" class="headerlink" title="(2) 可见进程:"></a>(2) 可见进程:</h5><p>这种进程虽然不在前台，但是仍然可见。</p>
+<ul>
+<li>该进程持有的Activity执行了<code>onPause</code>但未执行<code>onStop</code>。例如原活动启动了一个 dialog主题的activity，但此时原活动并非完全不可见。</li>
+<li>该进程有service绑定到可见的或前台Activity。</li>
+</ul>
+<h5 id="3-服务进程："><a href="#3-服务进程：" class="headerlink" title="(3) 服务进程："></a>(3) 服务进程：</h5><p>进程中持有一个service，同时不属于上面两种情况。</p>
+<h5 id="4-后台进程："><a href="#4-后台进程：" class="headerlink" title="(4) 后台进程："></a>(4) 后台进程：</h5><p>不属于上面三种情况，但进程持有一个不可见的<code>activity</code>,即执行了<code>onStop</code>但未执行<code>onDestroy</code>的状态。</p>
+<h5 id="5-空进程"><a href="#5-空进程" class="headerlink" title="(5) 空进程:"></a>(5) 空进程:</h5><p>不包含任何活跃的应用组件，作用是加快下次启动这个进程中组件所需要的时间，优先级最低。</p>
+<h2 id="activity的启动模式"><a href="#activity的启动模式" class="headerlink" title="activity的启动模式"></a>activity的启动模式</h2><p>和生命周期一样，activity的四种<code>launchMode</code>也非常重要但又特别容易混淆，首先，activity是以任务栈的形式创建和销毁的，栈是一种“后进先出”的数据结构，在默认情况下，启动第一个activity时，系统将会为它创建一个任务栈并将活动置于栈底，而从这个activity启动的其他activity将会依次入栈，当用户连续按下返回键时，任务栈中的activity会从栈顶开始依次销毁。但是这样有一个弊端，就是对于某些activity我们不希望它总是重新创建，这时就需要采用不同的启动模式，下面就简单复习下activity的四种启动模式 :</p>
+<ul>
+<li><strong>standard(标准模式)</strong> : 这是activity的默认启动模式，只要启动activity就会创建一个新实例，例如有两个活动ActivityA和AciivityB，现在从活动A中连续3次启动B活动，那么活动B就会依次创建三个实例，按顺序进入ActivityA所在的任务栈中。</li>
+</ul>
+<p><img src="http://img.hellofhy.cn/18-4-1/20324066.jpg"></p>
+<p>执行<code>adb shell dumpsys activity</code>命令观察任务栈中的实际情况:</p>
+<p><img src="http://img.hellofhy.cn/18-4-2/55270989.jpg"></p>
+<ul>
+<li><p><strong>singleTop(栈顶复用)</strong> :在这种启动模式下，首先会判断要启动的活动是否已经存在于栈顶，如果是的话就不创建新实例，直接复用栈顶活动。如果要启动的活动不位于栈顶或在栈中无实例，则会创建新实例入栈。例如栈中有活动A、B、C，启动模式全部为<code>singleTop</code>,现在想要新建一个活动C，执行完成后任务栈中的情况依然为A、B、C; 但是如果新建一个活动A，因为A不位于栈顶，所以会重新创建实例入栈，任务栈变为:A、B、C、A，</p>
+<p>  <img src="http://img.hellofhy.cn/18-4-1/21672515.jpg"></p>
+<p>  初始任务栈状态</p>
+<p>  <img src="http://img.hellofhy.cn/18-4-2/56109014.jpg"></p>
+<p>  接着启动活动A</p>
+<p>  <img src="http://img.hellofhy.cn/18-4-2/66489532.jpg"></p>
+<p>  可以看到活动A被重新创建入栈，但如果是启动活动C,栈内活动不会改变，只不过活动C会先经历<code>onPause</code>，然后回调<code>onNewIntent</code>方法，紧接着执行<code>onResume</code>。</p>
+<p>  <img src="http://img.hellofhy.cn/18-4-2/33022579.jpg"></p>
+</li>
+</ul>
+<ul>
+<li><p><strong>singleTask(栈内复用)</strong> : 这种模式比较复杂，是一种栈内单例模式，当一个activity启动时，会进行两次判断</p>
+<ul>
+<li><p>首先会寻找是否有这个活动需要的任务栈，如果没有就创建这个任务栈并将活动入栈，如果有的话就进入下一步判断。</p>
+</li>
+<li><p>第二次判断这个栈中是否存在该activity的实例，如果不存在就新建activity入栈，如果存在的话就直接复用，并且带有<code>clearTop</code>效果，会将该实例上方的所有活动全部出栈，令这个activity位于栈顶。</p>
+</li>
+</ul>
+<p>  <strong>场景一</strong>:假设当前任务栈中只有活动A，想要从A启动<code>launchMode</code>为<code>singleTask</code>的活动B，但是活动B指定的任务栈与A不同,这里用到了<code>TaskAffinity</code>属性，相当于指定了想要的任务栈，下面会详细介绍。</p>
+<pre><code>  &lt;activity
+      android:name=&quot;.test.ActivityA&quot;
+      android:taskAffinity=&quot;com.example.a41061.task1&quot;&gt;
+      &lt;intent-filter&gt;
+          &lt;action android:name=&quot;android.intent.action.MAIN&quot;/&gt;
+          &lt;category android:name=&quot;android.intent.category.LAUNCHER&quot;/&gt;
+      &lt;/intent-filter&gt;
+  &lt;/activity&gt;
+
+  &lt;activity
+      android:name=&quot;.test.ActivityB&quot;
+      android:launchMode=&quot;singleTask&quot;
+      android:taskAffinity=&quot;com.example.a41061.task2&quot;/&gt;</code></pre>
+<p>  启动后可以看到活动B运行在了一个新task中。</p>
+<p>  <img src="http://img.hellofhy.cn/18-4-2/73842158.jpg">    </p>
+<p>  <strong>场景二</strong>: 当前任务栈task1中存在活动A，从A中连续启动三个活动，顺序为B-&gt;C-&gt;B，B、C的启动模式均为<code>singleTask</code>，请求栈为task2，最后的启动结果将和上一种场景一样，不再重复展示，这里体现了<code>singleTask</code>模式的<code>clearTop</code>属性，第二次启动activityB后会复用栈底的实例，并将activityC出栈。</p>
+</li>
+</ul>
+<ul>
+<li><strong>singleInstance(单例)</strong> : 这种模式是真正的单例模式，以这种模式启动的活动会单独创建一个任务栈，并且依然遵循栈内复用的特性，保证了这个栈中只能存在这一个活动。</li>
+</ul>
+<p>还有一些需要注意的属性</p>
+<ul>
+<li><p>**onNewIntent()**方法 : 后三种模式都会出现活动复用的情况，一旦活动被复用，就会回调用<code>onNewIntent</code>方法,通过这个方法中的Intent参数就可以进行页面的更新，举一个实际应用场景的例子:</p>
+<ul>
+<li>在活动A点击设置密码按钮进入活动B: <code>A-&gt;B</code></li>
+<li>在活动B中设置密码后点击完成后进入活动C: <code>A-&gt;B-&gt;C</code></li>
+<li>在活动C中点击确认，返回活动A，并且携带已经确认的信息: <code>A-&gt;B-&gt;C-&gt;A</code></li>
+<li>活动A在<code>onNewIntent</code>方法中获取信息，将设置密码字样改为修改密码。</li>
+</ul>
+</li>
+<li><p><strong>TaskAffinity属性</strong> : 这个属性代表活动的亲和性，即一个活动启动时想要指定的任务栈名字，在默认情况下，所有活动所需的任务栈名字为所应用的包名。</p>
+</li>
+</ul>
+<h4 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h4><ul>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/lygsust/article/details/52777537">Android系统回收Activity的优先级</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_33544860/article/details/54863895">Android configChanges的属性值和含义</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+              <a href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag"># 面试</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/03/23/Mac+django+nginx+uwsgi+mysql/" rel="prev" title="Linux+django+nginx+uwsgi+mysql部署">
+      <i class="fa fa-chevron-left"></i> Linux+django+nginx+uwsgi+mysql部署
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/04/21/java%E5%A4%9A%E7%BA%BF%E7%A8%8B%E6%95%B4%E7%90%86/" rel="next" title="Java多线程整理">
+      Java多线程整理 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%80%81%E7%94%9F%E5%B8%B8%E8%B0%88%E2%80%94%E2%80%94activity%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F"><span class="nav-number">1.</span> <span class="nav-text">老生常谈——activity生命周期</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E6%AD%A3%E5%B8%B8%E6%83%85%E5%86%B5%E4%B8%8B%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%88%86%E6%9E%90"><span class="nav-number">1.1.</span> <span class="nav-text">一、正常情况下的生命周期分析</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1%E3%80%81-%E7%94%B1%E6%B4%BB%E5%8A%A8A%E5%90%AF%E5%8A%A8%E6%B4%BB%E5%8A%A8B%E6%97%B6%EF%BC%8C%E6%B4%BB%E5%8A%A8A%E7%9A%84onPause-%E4%B8%8E%E6%B4%BB%E5%8A%A8B%E7%9A%84onResume-%E5%93%AA%E4%B8%80%E4%B8%AA%E5%85%88%E6%89%A7%E8%A1%8C%EF%BC%9F"><span class="nav-number">1.1.1.</span> <span class="nav-text">1、 由活动A启动活动B时，活动A的onPause()与活动B的onResume()哪一个先执行？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2%E3%80%81dialog%E6%98%AF%E5%90%A6%E4%BC%9A%E5%AF%B9%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E4%BA%A7%E7%94%9F%E5%BD%B1%E5%93%8D"><span class="nav-number">1.1.2.</span> <span class="nav-text">2、dialog是否会对生命周期产生影响</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%BC%82%E5%B8%B8%E7%8A%B6%E6%80%81%E4%B8%8B%E6%B4%BB%E5%8A%A8%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F"><span class="nav-number">1.2.</span> <span class="nav-text">二、异常状态下活动的生命周期</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1%E3%80%81%E8%B5%84%E6%BA%90%E9%85%8D%E7%BD%AE%E6%94%B9%E5%8F%98%E5%AF%BC%E8%87%B4activity%E9%87%8D%E5%BB%BA"><span class="nav-number">1.2.1.</span> <span class="nav-text">1、资源配置改变导致activity重建</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-%E6%95%B0%E6%8D%AE%E4%BF%9D%E5%AD%98"><span class="nav-number">1.2.1.1.</span> <span class="nav-text">(1) 数据保存</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-%E9%98%B2%E6%AD%A2%E9%87%8D%E5%BB%BA"><span class="nav-number">1.2.1.2.</span> <span class="nav-text">(2) 防止重建</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2%E3%80%81%E4%BD%8E%E4%BC%98%E5%85%88%E7%BA%A7%E7%9A%84activity%E7%94%B1%E4%BA%8E%E5%86%85%E5%AD%98%E4%B8%8D%E8%B6%B3%E8%A2%AB%E6%9D%80%E6%AD%BB"><span class="nav-number">1.2.2.</span> <span class="nav-text">2、低优先级的activity由于内存不足被杀死</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-%E5%89%8D%E5%8F%B0%E8%BF%9B%E7%A8%8B%EF%BC%9A"><span class="nav-number">1.2.2.1.</span> <span class="nav-text">(1) 前台进程：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-%E5%8F%AF%E8%A7%81%E8%BF%9B%E7%A8%8B"><span class="nav-number">1.2.2.2.</span> <span class="nav-text">(2) 可见进程:</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-%E6%9C%8D%E5%8A%A1%E8%BF%9B%E7%A8%8B%EF%BC%9A"><span class="nav-number">1.2.2.3.</span> <span class="nav-text">(3) 服务进程：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4-%E5%90%8E%E5%8F%B0%E8%BF%9B%E7%A8%8B%EF%BC%9A"><span class="nav-number">1.2.2.4.</span> <span class="nav-text">(4) 后台进程：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#5-%E7%A9%BA%E8%BF%9B%E7%A8%8B"><span class="nav-number">1.2.2.5.</span> <span class="nav-text">(5) 空进程:</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#activity%E7%9A%84%E5%90%AF%E5%8A%A8%E6%A8%A1%E5%BC%8F"><span class="nav-number">2.</span> <span class="nav-text">activity的启动模式</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="nav-number">2.0.1.</span> <span class="nav-text">参考文章</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">fhyPayaso</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">18</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">categories</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">fhyPayaso</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

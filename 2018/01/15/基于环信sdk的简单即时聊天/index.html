@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="在一些小项目的开发过程中，需求里可能会有实现聊天功能的要求，完全由后端实现可能会比较繁琐，这里我们选择通过集成环信SDK来实现简单的聊天功能。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基于环信sdk的简单即时聊天">
+<meta property="og:url" content="http://example.com/2018/01/15/%E5%9F%BA%E4%BA%8E%E7%8E%AF%E4%BF%A1sdk%E7%9A%84%E7%AE%80%E5%8D%95%E5%8D%B3%E6%97%B6%E8%81%8A%E5%A4%A9/index.html">
+<meta property="og:site_name" content="fhyPayaso&#39;s Blog">
+<meta property="og:description" content="在一些小项目的开发过程中，需求里可能会有实现聊天功能的要求，完全由后端实现可能会比较繁琐，这里我们选择通过集成环信SDK来实现简单的聊天功能。">
+<meta property="og:locale">
+<meta property="og:image" content="http://p0y1qzu73.bkt.clouddn.com/18-1-15/73472058.jpg">
+<meta property="article:published_time" content="2018-01-15T07:04:51.000Z">
+<meta property="article:modified_time" content="2020-12-29T08:29:27.424Z">
+<meta property="article:author" content="fhyPayaso">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="SDK">
+<meta property="article:tag" content="IM">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://p0y1qzu73.bkt.clouddn.com/18-1-15/73472058.jpg">
+
+<link rel="canonical" href="http://example.com/2018/01/15/%E5%9F%BA%E4%BA%8E%E7%8E%AF%E4%BF%A1sdk%E7%9A%84%E7%AE%80%E5%8D%95%E5%8D%B3%E6%97%B6%E8%81%8A%E5%A4%A9/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'cn'
+  };
+</script>
+
+  <title>基于环信sdk的简单即时聊天 | fhyPayaso's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">fhyPayaso's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="cn">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/01/15/%E5%9F%BA%E4%BA%8E%E7%8E%AF%E4%BF%A1sdk%E7%9A%84%E7%AE%80%E5%8D%95%E5%8D%B3%E6%97%B6%E8%81%8A%E5%A4%A9/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="fhyPayaso">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="fhyPayaso's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          基于环信sdk的简单即时聊天
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-01-15 15:04:51" itemprop="dateCreated datePublished" datetime="2018-01-15T15:04:51+08:00">2018-01-15</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-12-29 16:29:27" itemprop="dateModified" datetime="2020-12-29T16:29:27+08:00">2020-12-29</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>在一些小项目的开发过程中，需求里可能会有实现聊天功能的要求，完全由后端实现可能会比较繁琐，这里我们选择通过集成环信SDK来实现简单的聊天功能。</p>
+<a id="more"></a>
+<blockquote>
+<p>不洗碗工作室 @Author fhyPayaso</p>
+</blockquote>
+<h2 id="一、前期准备"><a href="#一、前期准备" class="headerlink" title="一、前期准备"></a>一、前期准备</h2><ul>
+<li>首先我们需要在环信官网上注册开发者账号并创建应用，获取到AppKey，具体流程请见<a target="_blank" rel="noopener" href="http://docs.easemob.com/im/000quickstart/10register">注册并创建应用</a></li>
+</ul>
+<h2 id="二、集成sdk"><a href="#二、集成sdk" class="headerlink" title="二、集成sdk"></a>二、集成sdk</h2><ul>
+<li><p>在biuld.gradle中添加如下依赖</p>
+<pre><code>  compile &#39;com.google.android.gms:play-services-gcm:9.4.0&#39;
+  compile &#39;com.hyphenate:hyphenate-sdk:3.3.0&#39;</code></pre>
+</li>
+<li><p>在Manifest中添加需要的权限，记得在 <code>android:value</code>添加你之前注册好的AppKey</p>
+<pre><code>  &lt;uses-permission android:name=&quot;android.permission.VIBRATE&quot; /&gt;
+  &lt;uses-permission android:name=&quot;android.permission.INTERNET&quot; /&gt;
+  &lt;uses-permission android:name=&quot;android.permission.RECORD_AUDIO&quot; /&gt;
+  &lt;uses-permission android:name=&quot;android.permission.CAMERA&quot; /&gt;
+  &lt;uses-permission android:name=&quot;android.permission.ACCESS_NETWORK_STATE&quot; /&gt;
+  &lt;uses-permission android:name=&quot;android.permission.ACCESS_MOCK_LOCATION&quot; /&gt;
+  &lt;uses-permission android:name=&quot;android.permission.WRITE_EXTERNAL_STORAGE&quot; /&gt;
+  &lt;uses-permission android:name=&quot;android.permission.MOUNT_UNMOUNT_FILESYSTEMS&quot;/&gt;  
+  &lt;uses-permission android:name=&quot;android.permission.ACCESS_FINE_LOCATION&quot; /&gt;
+  &lt;uses-permission android:name=&quot;android.permission.GET_TASKS&quot; /&gt;
+  &lt;uses-permission android:name=&quot;android.permission.ACCESS_WIFI_STATE&quot; /&gt;
+  &lt;uses-permission android:name=&quot;android.permission.CHANGE_WIFI_STATE&quot; /&gt;
+  &lt;uses-permission android:name=&quot;android.permission.WAKE_LOCK&quot; /&gt;
+  &lt;uses-permission android:name=&quot;android.permission.MODIFY_AUDIO_SETTINGS&quot; /&gt;
+  &lt;uses-permission android:name=&quot;android.permission.READ_PHONE_STATE&quot; /&gt;
+  &lt;uses-permission android:name=&quot;android.permission.RECEIVE_BOOT_COMPLETED&quot; /&gt;
+  &lt;application
+      android:icon=&quot;@drawable/ic_launcher&quot;
+      android:label=&quot;@string/app_name&quot;
+      android:name=&quot;Your Application&quot;&gt;
+         &lt;!-- 设置环信应用的AppKey --&gt;
+      &lt;meta-data
+          android:name=&quot;EASEMOB_APPKEY&quot;
+          android:value=&quot;Your AppKey&quot;/&gt;
+      &lt;!-- 声明SDK所需的service SDK核心功能--&gt;
+      &lt;service
+          android:name=&quot;com.hyphenate.chat.EMChatService&quot;
+          android:exported=&quot;true&quot;/&gt;
+      &lt;service
+          android:name=&quot;com.hyphenate.chat.EMJobService&quot;
+          android:exported=&quot;true&quot;
+          android:permission=&quot;android.permission.BIND_JOB_SERVICE&quot;
+          /&gt;
+      &lt;!-- 声明SDK所需的receiver --&gt;
+      &lt;receiver android:name=&quot;com.hyphenate.chat.EMMonitorReceiver&quot;&gt;
+          &lt;intent-filter&gt;
+              &lt;action android:name=&quot;android.intent.action.PACKAGE_REMOVED&quot;/&gt;
+              &lt;data android:scheme=&quot;package&quot;/&gt;
+          &lt;/intent-filter&gt;
+          &lt;!-- 可选filter --&gt;
+          &lt;intent-filter&gt;
+              &lt;action android:name=&quot;android.intent.action.BOOT_COMPLETED&quot;/&gt;
+              &lt;action android:name=&quot;android.intent.action.USER_PRESENT&quot;/&gt;
+          &lt;/intent-filter&gt;
+      &lt;/receiver&gt;
+  &lt;/application&gt;</code></pre>
+</li>
+</ul>
+<h2 id="三、初始化sdk"><a href="#三、初始化sdk" class="headerlink" title="三、初始化sdk"></a>三、初始化sdk</h2><ul>
+<li><p>首先要在Application的onCreate方法中初始化SDK的设置</p>
+<pre><code>  EMOptions options = new EMOptions();
+
+  // 在这里可以进行一些初始化设置，例如默认添加好友时，是不需要验证的，可以改成需要验证
+  options.setAcceptInvitationAlways(false);
+  ...
+  //初始化
+  EMClient.getInstance().init(this, options);</code></pre>
+</li>
+</ul>
+<ul>
+<li><p>如果你的应用中包含第三方登录功能，为了防止SDK重复初始化，需要在初始化sdk<code>EMClient.getInstance().init(applicationContext, options)</code>方法前添加判断：</p>
+<pre><code>  appContext = this;
+  int pid = android.os.Process.myPid();
+  String processAppName = getAppName(pid);
+  // 如果APP启用了远程的service，此application:onCreate会被调用2次
+  // 为了防止环信SDK被初始化2次，加此判断会保证SDK被初始化1次
+  // 默认的APP会在以包名为默认的process name下运行，如果查到的process name不是APP的process name就立即返回
+  if (processAppName == null ||!processAppName.equalsIgnoreCase(appContext.getPackageName())) &#123;
+      Log.e(TAG, &quot;enter the service process!&quot;);
+
+      // 则此application::onCreate 是被service 调用的，直接返回
+      return;
+  &#125;</code></pre>
+</li>
+</ul>
+<ul>
+<li><p>其中的<code>getAppName()</code>具体实现为:</p>
+<pre><code>  private String getAppName(int pID) &#123;
+
+      String processName = null;
+      ActivityManager am = (ActivityManager) this.getSystemService(ACTIVITY_SERVICE);
+      List l = am.getRunningAppProcesses();
+      Iterator i = l.iterator();
+      PackageManager pm = this.getPackageManager();
+
+      while (i.hasNext()) &#123;
+          ActivityManager.RunningAppProcessInfo info = (ActivityManager.RunningAppProcessInfo) (i.next());
+          try &#123;
+              if (info.pid == pID) &#123;
+                  processName = info.processName;
+                  return processName;
+              &#125;
+          &#125; catch (Exception e) &#123;
+          // Log.d(&quot;Process&quot;, &quot;Error&gt;&gt; :&quot;+ e.toString());
+          &#125;
+      &#125;
+      return processName;
+  &#125;</code></pre>
+</li>
+</ul>
+<h2 id="四、登录注册"><a href="#四、登录注册" class="headerlink" title="四、登录注册"></a>四、登录注册</h2><h3 id="注册"><a href="#注册" class="headerlink" title="注册"></a>注册</h3><p>注册模式分为两种，开放注册和授权注册。</p>
+<ul>
+<li>开放注册：能够直接在客户端进行注册，可以在测试中使用，在正式使用环境中不推荐。</li>
+<li>授权注册：授权注册需要后端通过环信提供的 REST API 注册，之后将信息保存到服务器并返回客户端。</li>
+</ul>
+<p>具体方法如下：</p>
+<pre><code>    new Thread(new Runnable() &#123;
+        @Override
+        public void run() &#123;
+
+            try &#123;
+                EMClient.getInstance().createAccount(editUsername.getText().toString().trim(), editPassword.getText().toString().trim());
+                Log.i(TAG, &quot;register: 注册成功&quot;);
+            &#125; catch (HyphenateException e) &#123;
+                //注册失败会抛出异常
+                e.printStackTrace();
+                Log.i(TAG, &quot;register: 注册失败&quot; + e.getErrorCode() + &quot; , &quot; + e.getMessage());
+            &#125;
+        &#125;
+    &#125;).start();</code></pre>
+<p>因为<code>EMClient.getInstance().createAccount(String username,password)</code>是同步方法，所以使用的时候需要自己创建线程，包括之后的同步方法都需要开新线程，不再赘述。</p>
+<h3 id="登录"><a href="#登录" class="headerlink" title="登录"></a>登录</h3><p>登录方法为异步方法，可以直接调用，并在回调函数中打印信息：</p>
+<pre><code>EMClient.getInstance().login(editUsername.getText().toString().trim(), 
+        editPassword.getText().toString().trim(), new EMCallBack() &#123;
+            @Override
+            public void onSuccess() &#123;
+
+            //保证进入主页面后本地会话和群组都 load 完毕
+            EMClient.getInstance().groupManager().loadAllGroups();
+            EMClient.getInstance().chatManager().loadAllConversations();
+            startActivity(new Intent(LoginActivity.this, FriendListActivity.class));
+            Log.i(TAG, &quot;onSuccess: 登录成功&quot;);
+        &#125;
+
+        @Override
+        public void onError(int code, String error) &#123;
+
+            Log.i(TAG, &quot;onError: 登录失败，&quot; + error);
+        &#125;
+
+        @Override
+        public void onProgress(int progress, String status) &#123;
+
+        &#125;
+    &#125;);</code></pre>
+<h3 id="自动登录"><a href="#自动登录" class="headerlink" title="自动登录"></a>自动登录</h3><p>sdk中自动登录属性是默认为true的，如果要取消自动登录，可以在sdk初始化的时候设置<code>options.setAutoLogin(false)</code></p>
+<h3 id="退出登录"><a href="#退出登录" class="headerlink" title="退出登录"></a>退出登录</h3><pre><code>EMClient.getInstance().logout(true, new EMCallBack() &#123;
+
+    @Override
+    public void onSuccess() &#123;
+        Log.i(TAG, &quot;onSuccess: 退出成功&quot;);
+    &#125;
+
+    @Override
+    public void onProgress(int progress, String status) &#123;
+
+    &#125;
+
+    @Override
+    public void onError(int code, String message) &#123;
+        Log.i(TAG, &quot;onError: 退出失败，&quot; + message);
+    &#125;
+&#125;);</code></pre>
+<p>如果集成了第三方的推送功能，那么方法中的第一个参数需要设置为true，目的是解绑设备token，否则的话可能出现退出之后依然能收到推送的情况。</p>
+<h2 id="五、好友管理"><a href="#五、好友管理" class="headerlink" title="五、好友管理"></a>五、好友管理</h2><h3 id="添加好友"><a href="#添加好友" class="headerlink" title="添加好友"></a>添加好友</h3><pre><code>//参数为要添加的好友的username和添加理由，默认为无需验证
+EMClient.getInstance().contactManager().addContact(toAddUsername, reason);</code></pre>
+<h3 id="删除好友"><a href="#删除好友" class="headerlink" title="删除好友"></a>删除好友</h3><pre><code>EMClient.getInstance().contactManager().deleteContact(username);</code></pre>
+<h3 id="获取好友列表"><a href="#获取好友列表" class="headerlink" title="获取好友列表"></a>获取好友列表</h3><pre><code>List&lt;String&gt; usernames = EMClient.getInstance().contactManager().getAllContactsFromServer();</code></pre>
+<p>环信只是即时通讯的消息通道。环信本身不提供用户体系，环信既不保存任何 APP 业务数据，也不保存任何 APP 的用户信息。所以我们需要通过获取到的username向app的服务端查询用户的详细信息。</p>
+<h3 id="搜索好友"><a href="#搜索好友" class="headerlink" title="搜索好友"></a>搜索好友</h3><p>环信sdk并不提供搜索好友的接口，但我们可以通过服务端的sdk接口将所有用户的username导入环信，保证查到的好友可以添加，然后通过服务端搜索获取具体用户的username，实现通过搜索添加好友功能。</p>
+<h2 id="六、即时聊天"><a href="#六、即时聊天" class="headerlink" title="六、即时聊天"></a>六、即时聊天</h2><h3 id="文本消息发送"><a href="#文本消息发送" class="headerlink" title="文本消息发送"></a>文本消息发送</h3><p>具体方法如下：</p>
+<pre><code>//创建一条文本消息，content为消息文字内容，username为对方用户名
+EMMessage message = EMMessage.createTxtSendMessage(content, username);
+//如果是群聊，设置chattype，默认是单聊
+if (chatType == CHATTYPE_GROUP)
+    message.setChatType(ChatType.GroupChat);
+//发送消息
+EMClient.getInstance().chatManager().sendMessage(message);</code></pre>
+<h3 id="消息接收监听"><a href="#消息接收监听" class="headerlink" title="消息接收监听"></a>消息接收监听</h3><p>我们可以通过实现<code>EMMessageListener</code>接口的方法来设置消息的监听</p>
+<pre><code>public class ChatActivity extends AppCompatActivity implements EMMessageListener &#123;
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) &#123;
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_chat);
+        //添加信息监听
+        EMClient.getInstance().chatManager().addMessageListener(this);
+    &#125;
+
+    @Override
+    public void onMessageReceived(List&lt;EMMessage&gt; messages) &#123;
+
+        //收到消息，在这里进行RecyclerView重新加载和渲染
+    &#125;
+
+    @Override
+    public void onCmdMessageReceived(List&lt;EMMessage&gt; messages) &#123;
+
+        //收到传透消息，如头像、昵称的更新等
+    &#125;
+
+    @Override
+    public void onMessageRead(List&lt;EMMessage&gt; messages) &#123;
+
+        //收到已读回执
+    &#125;
+
+    @Override
+    public void onMessageDelivered(List&lt;EMMessage&gt; messages) &#123;
+
+        //收到送达回执
+    &#125;
+
+    @Override
+    public void onMessageChanged(EMMessage message, Object change) &#123;
+
+        //消息状态变动
+    &#125;
+&#125;    </code></pre>
+<p>在不需要的时候移除listener，如在activity的<code>onDestroy()</code>时</p>
+<pre><code>EMClient.getInstance().chatManager().removeMessageListener(this);</code></pre>
+<h3 id="获取消息记录"><a href="#获取消息记录" class="headerlink" title="获取消息记录"></a>获取消息记录</h3><p>具体方法为：</p>
+<pre><code>EMConversation conversation = EMClient.getInstance().chatManager().getConversation(username);
+//获取此会话的所有消息
+List&lt;EMMessage&gt; messages = conversation.getAllMessages();</code></pre>
+<p>在RecyclerView的adapter中将messages显示到ui中</p>
+<pre><code>EMTextMessageBody textMessageBody = (EMTextMessageBody) emMessage.getBody();
+txtMessage.setText(textMessageBody.getMessage());</code></pre>
+<p>SDK默认加载的聊天记录最多为20条，可以在初始化SDK时进行设置<code>options.setNumberOfMessagesLoaded(number)</code></p>
+<h2 id="七、Demo展示"><a href="#七、Demo展示" class="headerlink" title="七、Demo展示"></a>七、Demo展示</h2><p><img src="http://p0y1qzu73.bkt.clouddn.com/18-1-15/73472058.jpg"></p>
+<p>本文只简单介绍了实现文字即时聊天的方法，SDK更多的功能请见<a target="_blank" rel="noopener" href="http://docs.easemob.com/im/200androidclientintegration/10androidsdkimport">环信开发文档</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+              <a href="/tags/SDK/" rel="tag"># SDK</a>
+              <a href="/tags/IM/" rel="tag"># IM</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/12/31/Android%E6%8E%A8%E8%8D%90%E5%AD%A6%E4%B9%A0%E8%B7%AF%E5%BE%84/" rel="prev" title="Android推荐学习路径">
+      <i class="fa fa-chevron-left"></i> Android推荐学习路径
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/02/23/%E5%88%9D%E6%8E%A2RxJava%E4%BB%A5%E5%8F%8A%E7%BB%93%E5%90%88Retrofit%E7%9A%84%E4%BD%BF%E7%94%A8%20/" rel="next" title="初探RxJava以及结合Retrofit的使用">
+      初探RxJava以及结合Retrofit的使用 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%89%8D%E6%9C%9F%E5%87%86%E5%A4%87"><span class="nav-number">1.</span> <span class="nav-text">一、前期准备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E9%9B%86%E6%88%90sdk"><span class="nav-number">2.</span> <span class="nav-text">二、集成sdk</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%88%9D%E5%A7%8B%E5%8C%96sdk"><span class="nav-number">3.</span> <span class="nav-text">三、初始化sdk</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E7%99%BB%E5%BD%95%E6%B3%A8%E5%86%8C"><span class="nav-number">4.</span> <span class="nav-text">四、登录注册</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B3%A8%E5%86%8C"><span class="nav-number">4.1.</span> <span class="nav-text">注册</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%99%BB%E5%BD%95"><span class="nav-number">4.2.</span> <span class="nav-text">登录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%87%AA%E5%8A%A8%E7%99%BB%E5%BD%95"><span class="nav-number">4.3.</span> <span class="nav-text">自动登录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%80%E5%87%BA%E7%99%BB%E5%BD%95"><span class="nav-number">4.4.</span> <span class="nav-text">退出登录</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E5%A5%BD%E5%8F%8B%E7%AE%A1%E7%90%86"><span class="nav-number">5.</span> <span class="nav-text">五、好友管理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0%E5%A5%BD%E5%8F%8B"><span class="nav-number">5.1.</span> <span class="nav-text">添加好友</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%A0%E9%99%A4%E5%A5%BD%E5%8F%8B"><span class="nav-number">5.2.</span> <span class="nav-text">删除好友</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E5%A5%BD%E5%8F%8B%E5%88%97%E8%A1%A8"><span class="nav-number">5.3.</span> <span class="nav-text">获取好友列表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%90%9C%E7%B4%A2%E5%A5%BD%E5%8F%8B"><span class="nav-number">5.4.</span> <span class="nav-text">搜索好友</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E5%8D%B3%E6%97%B6%E8%81%8A%E5%A4%A9"><span class="nav-number">6.</span> <span class="nav-text">六、即时聊天</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%87%E6%9C%AC%E6%B6%88%E6%81%AF%E5%8F%91%E9%80%81"><span class="nav-number">6.1.</span> <span class="nav-text">文本消息发送</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B6%88%E6%81%AF%E6%8E%A5%E6%94%B6%E7%9B%91%E5%90%AC"><span class="nav-number">6.2.</span> <span class="nav-text">消息接收监听</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E6%B6%88%E6%81%AF%E8%AE%B0%E5%BD%95"><span class="nav-number">6.3.</span> <span class="nav-text">获取消息记录</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%83%E3%80%81Demo%E5%B1%95%E7%A4%BA"><span class="nav-number">7.</span> <span class="nav-text">七、Demo展示</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">fhyPayaso</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">18</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">categories</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">fhyPayaso</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

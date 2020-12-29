@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="不洗碗工作室 @Author fhyPayaso  前言 本人水平有限，如发现错误，欢迎私信批评指正  版权归作者和不洗碗工作室所有，转载请声明出处  该学习路径以任务形式推进，希望通过一个月的时间，让初学者具备最基本的Android开发能力，具体要求如下：  每周日发送个人周报到作者邮箱 : fanhongyu@hrsoft.net  邮件名格式：【个人周报】【Android】【姓名】  周报">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android推荐学习路径">
+<meta property="og:url" content="http://example.com/2017/12/31/Android%E6%8E%A8%E8%8D%90%E5%AD%A6%E4%B9%A0%E8%B7%AF%E5%BE%84/index.html">
+<meta property="og:site_name" content="fhyPayaso&#39;s Blog">
+<meta property="og:description" content="不洗碗工作室 @Author fhyPayaso  前言 本人水平有限，如发现错误，欢迎私信批评指正  版权归作者和不洗碗工作室所有，转载请声明出处  该学习路径以任务形式推进，希望通过一个月的时间，让初学者具备最基本的Android开发能力，具体要求如下：  每周日发送个人周报到作者邮箱 : fanhongyu@hrsoft.net  邮件名格式：【个人周报】【Android】【姓名】  周报">
+<meta property="og:locale">
+<meta property="og:image" content="http://p0y1qzu73.bkt.clouddn.com/17-12-31/38050659.jpg">
+<meta property="og:image" content="http://p0y1qzu73.bkt.clouddn.com/17-12-31/47112490.jpg">
+<meta property="og:image" content="http://p0y1qzu73.bkt.clouddn.com/17-12-31/94972914.jpg">
+<meta property="og:image" content="http://p0y1qzu73.bkt.clouddn.com/17-12-31/94412575.jpg">
+<meta property="og:image" content="http://p0y1qzu73.bkt.clouddn.com/17-12-31/15399074.jpg">
+<meta property="article:published_time" content="2017-12-31T15:02:27.000Z">
+<meta property="article:modified_time" content="2020-12-29T08:29:27.417Z">
+<meta property="article:author" content="fhyPayaso">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="学习路径">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://p0y1qzu73.bkt.clouddn.com/17-12-31/38050659.jpg">
+
+<link rel="canonical" href="http://example.com/2017/12/31/Android%E6%8E%A8%E8%8D%90%E5%AD%A6%E4%B9%A0%E8%B7%AF%E5%BE%84/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'cn'
+  };
+</script>
+
+  <title>Android推荐学习路径 | fhyPayaso's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">fhyPayaso's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="cn">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2017/12/31/Android%E6%8E%A8%E8%8D%90%E5%AD%A6%E4%B9%A0%E8%B7%AF%E5%BE%84/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="fhyPayaso">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="fhyPayaso's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android推荐学习路径
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2017-12-31 23:02:27" itemprop="dateCreated datePublished" datetime="2017-12-31T23:02:27+08:00">2017-12-31</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-12-29 16:29:27" itemprop="dateModified" datetime="2020-12-29T16:29:27+08:00">2020-12-29</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>不洗碗工作室 @Author fhyPayaso</p>
+</blockquote>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><ul>
+<li><p>本人水平有限，如发现错误，欢迎私信批评指正</p>
+</li>
+<li><p>版权归作者和不洗碗工作室所有，转载请声明出处</p>
+</li>
+<li><p>该学习路径以任务形式推进，希望通过一个月的时间，让初学者具备最基本的Android开发能力，具体要求如下：</p>
+<ul>
+<li><p>每周日发送个人周报到作者邮箱 : <a target="_blank" rel="noopener" href="https://qiye.aliyun.com/alimail/#h=WyJmbV8yIixbIjIiLCIiLHsiZklkIjoiMyJ9LHsibGFiZWwiOiLpgq7ku7YifV1d">fanhongyu@hrsoft.net</a></p>
+</li>
+<li><p>邮件名格式：【个人周报】【Android】【姓名】</p>
+</li>
+<li><p>周报内容：周报内容应<strong>尽可能详细</strong>，具体包括：</p>
+<ul>
+<li><p>本周工作</p>
+</li>
+<li><p>下周计划</p>
+</li>
+<li><p>遇到的问题</p>
+</li>
+<li><p>成果产出 ( 如github链接、图片界面展示等 )</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p>遇到问题尽量自己先百度谷歌</p>
+</li>
+<li><p>本学习路径将在<a target="_blank" rel="noopener" href="http://www.fhypayaso.cn/">个人博客</a>上实时更新</p>
+</li>
+</ul>
+<h2 id="第一周"><a href="#第一周" class="headerlink" title="第一周"></a>第一周</h2><ul>
+<li><p>熟悉java基础语法 ： <a target="_blank" rel="noopener" href="http://www.runoob.com/java/java-tutorial.html">菜鸟教程</a></p>
+</li>
+<li><p>java开发工具 : <a target="_blank" rel="noopener" href="https://www.jetbrains.com/idea/">IntelliJ IDEA</a></p>
+</li>
+<li><p><strong>重点学习</strong> ：</p>
+<ul>
+<li><p>面向对象编程思想</p>
+</li>
+<li><p>java多线程机制</p>
+</li>
+<li><p>泛型</p>
+</li>
+<li><p>异常处理</p>
+</li>
+<li><p>了解正则表达式</p>
+</li>
+<li><p>javadoc注释</p>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p>Android环境搭建 ：Android Studio</p>
+</li>
+<li><p>Git/Github的基本使用(命令行操作)</p>
+</li>
+</ul>
+<h2 id="第二周"><a href="#第二周" class="headerlink" title="第二周"></a>第二周</h2><ul>
+<li><p>Android基础知识 : 推荐书籍《第一行代码》</p>
+</li>
+<li><p>常用布局 : LinearLayout、RelativeLayout</p>
+</li>
+<li><p>常用控件 : TextView、ImageView、Button、EditText、ScrollView等</p>
+</li>
+<li><p>作业：用xml画出如下界面：</p>
+</li>
+</ul>
+<div align=center>
+<img src="http://p0y1qzu73.bkt.clouddn.com/17-12-31/38050659.jpg" width = "50%"/>
+</div>
+<div align=center>作业1</div>
+<div align=center>
+<img src="http://p0y1qzu73.bkt.clouddn.com/17-12-31/47112490.jpg" width = "50%"/>
+</div>
+<div align=center>作业2</div>
+
+<h2 id="第三周"><a href="#第三周" class="headerlink" title="第三周"></a>第三周</h2><ul>
+<li><p>RecyclerView的使用及自定义样式、点击事件</p>
+</li>
+<li><p>Fragment与ViewPager联动</p>
+</li>
+<li><p>Tablayout与ViewPager联动</p>
+</li>
+<li><p>作业：在上一周作业的基础上增添以下内容</p>
+<ul>
+<li>通过Fragment加ViewPager实现底部导航栏</li>
+<li>给页面添加RecyclerView</li>
+<li>点击RecyclerView中的每个item，弹出Toast“点击了position”(position为item的位置)</li>
+</ul>
+</li>
+</ul>
+<div align=center>
+<img src="http://p0y1qzu73.bkt.clouddn.com/17-12-31/94972914.jpg" width = "50%"/>
+</div>
+<div align=center>作业1</div>
+<div align=center>
+<img src="http://p0y1qzu73.bkt.clouddn.com/17-12-31/94412575.jpg" width = "50%"/>
+</div>
+<div align=center>作业2</div>
+
+<h2 id="第四周"><a href="#第四周" class="headerlink" title="第四周"></a>第四周</h2><ul>
+<li><p>学习android代码规范，下载阿里巴巴编码规约扫描插件，按照规范重构源代码</p>
+</li>
+<li><p>通过Retrofit2.0进行网络请求</p>
+</li>
+<li><p>学习使用Postman测试后端接口是否正确</p>
+</li>
+<li><p>下载MarkDown编辑器，学习简单的MarkDown语法</p>
+</li>
+<li><p>作业：</p>
+<ul>
+<li><p>下面是NEUQerCC项目的登录接口，在之前作业的基础上增加登录界面,登录成功进入主界面，登录失败Toast错误msg</p>
+<div align=center>
+<img src="http://p0y1qzu73.bkt.clouddn.com/17-12-31/15399074.jpg" width = "50%"/>
+</div>
+</li>
+<li><p>将这个月学到的内容整理出一篇md文档，内容尽量详细</p>
+</li>
+</ul>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+              <a href="/tags/%E5%AD%A6%E4%B9%A0%E8%B7%AF%E5%BE%84/" rel="tag"># 学习路径</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/12/18/%E6%A0%91%E5%92%8C%E4%BA%8C%E5%8F%89%E6%A0%91/" rel="prev" title="Tree and Binary tree">
+      <i class="fa fa-chevron-left"></i> Tree and Binary tree
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/01/15/%E5%9F%BA%E4%BA%8E%E7%8E%AF%E4%BF%A1sdk%E7%9A%84%E7%AE%80%E5%8D%95%E5%8D%B3%E6%97%B6%E8%81%8A%E5%A4%A9/" rel="next" title="基于环信sdk的简单即时聊天">
+      基于环信sdk的简单即时聊天 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E5%91%A8"><span class="nav-number">2.</span> <span class="nav-text">第一周</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E5%91%A8"><span class="nav-number">3.</span> <span class="nav-text">第二周</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E5%91%A8"><span class="nav-number">4.</span> <span class="nav-text">第三周</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E5%9B%9B%E5%91%A8"><span class="nav-number">5.</span> <span class="nav-text">第四周</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">fhyPayaso</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">18</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">categories</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">fhyPayaso</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

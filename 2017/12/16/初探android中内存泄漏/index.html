@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="初步探究android的内存机制，内存泄漏的原因和解决办法，以及检测神器—LeakCanary的使用">
+<meta property="og:type" content="article">
+<meta property="og:title" content="初探android中内存泄漏">
+<meta property="og:url" content="http://example.com/2017/12/16/%E5%88%9D%E6%8E%A2android%E4%B8%AD%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/index.html">
+<meta property="og:site_name" content="fhyPayaso&#39;s Blog">
+<meta property="og:description" content="初步探究android的内存机制，内存泄漏的原因和解决办法，以及检测神器—LeakCanary的使用">
+<meta property="og:locale">
+<meta property="og:image" content="https://ws1.sinaimg.cn/large/006yrKRely1fmgcyggl6qj30a60gumxj.jpg">
+<meta property="article:published_time" content="2017-12-16T14:19:34.000Z">
+<meta property="article:modified_time" content="2020-12-29T08:29:27.423Z">
+<meta property="article:author" content="fhyPayaso">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="内存泄露">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ws1.sinaimg.cn/large/006yrKRely1fmgcyggl6qj30a60gumxj.jpg">
+
+<link rel="canonical" href="http://example.com/2017/12/16/%E5%88%9D%E6%8E%A2android%E4%B8%AD%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'cn'
+  };
+</script>
+
+  <title>初探android中内存泄漏 | fhyPayaso's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">fhyPayaso's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="cn">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2017/12/16/%E5%88%9D%E6%8E%A2android%E4%B8%AD%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="fhyPayaso">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="fhyPayaso's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          初探android中内存泄漏
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2017-12-16 22:19:34" itemprop="dateCreated datePublished" datetime="2017-12-16T22:19:34+08:00">2017-12-16</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-12-29 16:29:27" itemprop="dateModified" datetime="2020-12-29T16:29:27+08:00">2020-12-29</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>初步探究android的内存机制，内存泄漏的原因和解决办法，以及检测神器—LeakCanary的使用</p>
+<a id="more"></a>
+<blockquote>
+<p>作者：fhyPayaso</p>
+</blockquote>
+<h3 id="1-Java中对象和对象引用的区别"><a href="#1-Java中对象和对象引用的区别" class="headerlink" title="1. Java中对象和对象引用的区别"></a><strong>1. Java中对象和对象引用的区别</strong></h3><p>先看一个例子 : </p>
+<pre><code>Person person;
+person = new Person(&quot;name&quot;);</code></pre>
+<p>上面两行代码中，第一行person属于声明了一个Person类的引用，而第二行的new才是真正创建了一个对象。</p>
+<h3 id="2-Java中的内存环境"><a href="#2-Java中的内存环境" class="headerlink" title="2.Java中的内存环境"></a><strong>2.Java中的内存环境</strong></h3><p>Java在JVM所虚拟的内存环境中运行，内存可以分为三个部分：栈，堆，方法区</p>
+<ul>
+<li><p><strong>栈(stack)</strong><br>  每一个线程都拥有一个栈，在这里只保存基本数据类型和对象的引用(注意和对象的区别)，例如在方法中定义一个局部变量，就会在栈中给这个变量分配内存空间，超过该变量的作用域时，这部分内存就会被回收掉。</p>
+</li>
+<li><p><strong>堆(heap)</strong><br>  被所有进程所共享，只存放数组、对象以及对象的成员变量，不包括基本类型和引用，这部分内存空间由java中的垃圾回收机制自动管理。</p>
+</li>
+<li><p><strong>方法区(method)</strong><br>  又叫静态区，同样被所有进程所共享，存放class和static变量。</p>
+</li>
+</ul>
+<p>举个例子：</p>
+<pre><code>public class Person &#123;
+
+    int age = 18;
+    Person personA = new Person();
+
+    public void method() &#123;
+
+        int height = 180;
+        Person personB = new Person();
+
+    &#125;
+&#125;
+
+Person personC = new Person();</code></pre>
+<p>在上面的例子中，height以及引用变量personB都属于局部变量，所以它们的内存应存放在栈中，在method方法之外的作用域，这部分内存就会被回收，而personB所指向的对象的内存存放在堆上。<br>引用变量personC所指向的对象同理也存放在堆上，当然也包括Person类的成员变量age和personA，但引用变量personC本身则是存放在栈中。</p>
+<h3 id="3-垃圾回收机制-GC"><a href="#3-垃圾回收机制-GC" class="headerlink" title="3.垃圾回收机制(GC)"></a><strong>3.垃圾回收机制(GC)</strong></h3><p>在Java中，内存的分配是由程序来完成的，而内存的回收则是由GC完成的，GC为了能正确的释放对象，必须监控每一个对象的运行状态，包括对象的申请、引用、赋值等。对象通过引用的方式来使用，而当一个对象没有任何引用的时候，称为<strong>不可到达对象</strong>，GC用于回收不可到达对象所占用的内存。</p>
+<h3 id="4-安卓中的内存泄露-Memory-Leak"><a href="#4-安卓中的内存泄露-Memory-Leak" class="headerlink" title="4.安卓中的内存泄露(Memory Leak)"></a><strong>4.安卓中的内存泄露(Memory Leak)</strong></h3><p>虽然java中有垃圾回收的机制，可以自动管理内存分配，但是仍有可能出现内存泄露的情况。Java作为Android的主要开发语言，当存在内存泄漏时，APP就会浪费大量内存，当内存不够时会导致频繁的内存回收，然而内存回收是十分耗时的操作，这样就会导致APP的卡顿，严重的可能会导致内存溢出，退出程序。</p>
+<ul>
+<li><p><strong>内存泄露的原因</strong><br>安卓中主要出现内存泄漏的原因本质上就是，一个对象已经不会再被使用，但其内存却没有被系统所回收，而无法被回收的原因一般是由于该对象被一个生命周期更长的对象所引用。</p>
+</li>
+<li><p><strong>如何知道程序中存在内存泄漏</strong><br>在开发的过程中，可能已经产生了内存泄露但却没有被注意到，这时候就需要用到LeakCanary，一款由Square公司生产的内存泄露检测库，简单使用方法如下：</p>
+<ul>
+<li><p>在build.gradle中添加：</p>
+<pre><code>  debugCompile &#39;com.squareup.leakcanary:leakcanary-android:1.5&#39;
+  releaseCompile &#39;com.squareup.leakcanary:leakcanary-android-no-op:1.5&#39;</code></pre>
+</li>
+<li><p>在Application类添加</p>
+<pre><code>  public class TestApplication extends Application &#123;
+    @Override public void onCreate() &#123;
+      super.onCreate();
+      LeakCanary.install(this);
+    &#125;
+  &#125;</code></pre>
+<p>这样当程序出现内存泄露的情况时，会在系统通知栏出现提醒，点击后可以查看详细的泄露信息。</p>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p><strong>常见的内存泄漏</strong></p>
+<ul>
+<li><p>static关键字所导致的内存泄露</p>
+<p>  举个例子：</p>
+<pre><code>  public  class MainActivity extends Activity&#123;  
+
+      private static Context context;  
+
+      @Override  
+       protected void onCreate(Bundle savedInstanceState)&#123;  
+            super.onCreate(savedInstanceState);                   
+            setContentView(R,layout.main);
+
+            context = this;  
+      &#125;  
+  &#125;</code></pre>
+<p>  context为静态变量，生命周期较长，导致当前activity被销毁后无法被系统回收，产生内存泄漏。LeakCanary的详细泄露信息：</p>
+<p> <img src="https://ws1.sinaimg.cn/large/006yrKRely1fmgcyggl6qj30a60gumxj.jpg"></p>
+<p>  解决办法：在Activity的onDestroy方法里把静态变量设为null</p>
+<pre><code>  protected void onDestroy() &#123;  
+
+      super.onDestroy();  
+
+      if(context != null) &#123;  
+          context = null;  
+      &#125;  
+  &#125;</code></pre>
+</li>
+</ul>
+</li>
+</ul>
+<p>本文先初步探究android中的内存泄露的基本原理，其他具体可能引起内存泄露的情景和解决方法会在后续文章中探讨。</p>
+<p>参考文章:</p>
+<p><a target="_blank" rel="noopener" href="http://m.blog.csdn.net/lib739449500/article/details/78741263">《Android 中内存泄漏的原因和解决方案》</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.douban.com/note/609777758/">《Android常见内存泄露，学会这六招大大优化APP性能》</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+              <a href="/tags/%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2/" rel="tag"># 内存泄露</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/12/16/android%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7%E7%B1%BB/" rel="prev" title="android常用工具类">
+      <i class="fa fa-chevron-left"></i> android常用工具类
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2017/12/18/%E6%A0%91%E5%92%8C%E4%BA%8C%E5%8F%89%E6%A0%91/" rel="next" title="Tree and Binary tree">
+      Tree and Binary tree <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Java%E4%B8%AD%E5%AF%B9%E8%B1%A1%E5%92%8C%E5%AF%B9%E8%B1%A1%E5%BC%95%E7%94%A8%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">1.</span> <span class="nav-text">1. Java中对象和对象引用的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Java%E4%B8%AD%E7%9A%84%E5%86%85%E5%AD%98%E7%8E%AF%E5%A2%83"><span class="nav-number">2.</span> <span class="nav-text">2.Java中的内存环境</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6-GC"><span class="nav-number">3.</span> <span class="nav-text">3.垃圾回收机制(GC)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E5%AE%89%E5%8D%93%E4%B8%AD%E7%9A%84%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2-Memory-Leak"><span class="nav-number">4.</span> <span class="nav-text">4.安卓中的内存泄露(Memory Leak)</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">fhyPayaso</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">18</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">categories</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">fhyPayaso</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
