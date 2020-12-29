@@ -36,36 +36,102 @@
 // @lc code=start
 
 #include <vector>
+#include <algorithm>
+#include <set>
 using namespace std;
 
 class Solution
 {
 public:
-    vector<vector<int>> res;
-
-    void dfs(vector<int> &nums, vector<int> cur)
-    {
-        if (cur.size() == 3)
-        {
-            if (cur[0] + cur[1] + cur[2] == 0)
-                res.push_back(cur);
-            return;
-        }
-
-        for (int i = 0; i < nums.size(); i++)
-        {
-            cur.push_back(nums[i]);
-            dfs(nums, cur);
-            cur.pop_back();
-        }
-        
-    }
-
     vector<vector<int>> threeSum(vector<int> &nums)
     {
-        vector<int> cur;
-        dfs(nums, cur);
+        sort(nums.begin(), nums.end());
+
+        vector<vector<int>> res;
+
+        set<vector<int>> s;
+
+        for (int k = nums.size() - 1; k >= 2; k--)
+        {
+
+            // 选择k作为标志点, 然后双指针当做两数之和来做
+            int i = 0, j = k - 1;
+            while (i < j)
+            {
+                int sum = nums[k] + nums[i] + nums[j];
+                if (sum == 0)
+                {
+                    vector<int> v = {nums[i], nums[j], nums[k]};
+                    s.insert(v);
+                    if (!s.count(v))
+                    {
+                        res.push_back(v);
+                        
+                    }
+                    i++;
+                    j--;
+
+                    while (i < j && nums[i] == nums[i - 1])
+                        i++;
+                    while (i < j && nums[j] == nums[j + 1])
+                        j--;
+                }
+                else if (sum < 0)
+                    i++;
+                else if (sum > 0)
+                    j--;
+            }
+            // // k也可以去重复
+            // while (k >= 2 && k < nums.size() - 1 && nums[k] == nums[k + 1])
+            // {
+            //     k--;
+            // }
+        }
+
         return res;
     }
 };
 // @lc code=end
+
+// dfs 暴力超时
+// vector<vector<int>> res;
+
+// set<vector<int>> s;
+
+// void dfs(vector<int> &nums, vector<int> cur, vector<bool> vist)
+// {
+//     if (cur.size() == 3)
+//     {
+//         if (cur[0] + cur[1] + cur[2] == 0)
+//         {
+
+//             sort(cur.begin(), cur.end());
+//             if (s.count(cur))
+//                 return;
+//             s.insert(cur);
+
+//             res.push_back(cur);
+//         }
+
+//         return;
+//     }
+
+//     for (int i = 0; i < nums.size(); i++)
+//     {
+//         if (vist[i])
+//             continue;
+//         vist[i] = true;
+//         cur.push_back(nums[i]);
+//         dfs(nums, cur, vist);
+//         cur.pop_back();
+//         vist[i] = false;
+//     }
+// }
+
+// vector<vector<int>> threeSum(vector<int> &nums)
+// {
+//     vector<int> cur;
+//     vector<bool> vist(nums.size(), false);
+//     dfs(nums, cur, vist);
+//     return res;
+// }
