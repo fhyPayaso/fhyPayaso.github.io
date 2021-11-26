@@ -43,9 +43,7 @@ using namespace std;
 class Solution
 {
 public:
-    
-
-    int minPathSum(vector<vector<int>> &grid)
+    int minPathSum(vector<vector<int> > &grid)
     {
         int h = grid.size();
         int w = grid[0].size();
@@ -64,7 +62,7 @@ public:
             }
         }
 
-        return grid[h-1][w-1];
+        return grid[h - 1][w - 1];
     }
 };
 // @lc code=end

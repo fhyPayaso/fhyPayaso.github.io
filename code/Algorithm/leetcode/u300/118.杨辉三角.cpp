@@ -52,7 +52,7 @@ public:
                 rowVec.push_back(1);
             else
             {
-                rowVec.push_back(1);
+                   rowVec.push_back(1);
                 int length = i + 1;
                 for (int j = 1; j < length - 1; j++)
                 {

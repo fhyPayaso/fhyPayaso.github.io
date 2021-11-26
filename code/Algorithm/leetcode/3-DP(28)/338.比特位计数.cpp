@@ -63,7 +63,7 @@ public:
 // 101  1 + 1
 // 110  1 + 1
 // 111  2 + 1
-//1000  2 + 1
+//1000  0 + 1
 
 //
 // vector<int> countBits(int num)

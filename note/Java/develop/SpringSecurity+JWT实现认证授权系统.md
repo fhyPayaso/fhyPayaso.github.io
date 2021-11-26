@@ -29,5 +29,44 @@
 
 
 
+java集合
+
++ List  
+	+ ArrayList
+		+ 扩容: 首次添加默认10,  需要扩容，每次1.5倍
+		+ [ArrayList扩容](https://blog.csdn.net/weixin_47043124/article/details/111071388)
+	+ LinkedList
+	+ 区别
+
++ Map
+	+ HashMap
+		+ 线程不安全	
+		+ 初始大小16(若指定大小，扩充为2的幂次方)
+		+ 每次扩容一倍
+		+ 扩容因子0.75
+		+ 可以存null的kv
+		+ 数组+链表：1.8后链表超过8，检查数组长度小于64则先扩容，否则转成红黑树
+	+ HashTable
+		+ 初始大小11
+		+ 每次扩容2N+1
+		+ 线程安全，方法加锁
+		+ 不能存null的kv
+	+ ConcurrentHashMap
+set
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

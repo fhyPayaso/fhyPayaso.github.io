@@ -569,6 +569,13 @@ set方法首先通过`Thread.currentThread()`方法来获取当前线程，然�
 
 + **FixedThreadPool** : 创建固定大小的线程池。每次提交一个任务就创建一个线程，直到线程达到线程池的最大大小。线程池的大小一旦达到最大值就会保持不变，新添加的会被加入到任务队列中。如果某个线程因为执行异常而结束，那么线程池会补充一个新线程。
 
+```
+public static ExecutorService newFixedThreadPool(int nThreads) {
+        return new ThreadPoolExecutor(nThreads, nThreads,
+                                      0L, TimeUnit.MILLISECONDS,
+                                      new LinkedBlockingQueue<Runnable>());
+    }
+```
 
 + **CachedThreadPool**: 创建一个可缓存线程池，如果线程池长度超过处理需要，可灵活回收空闲线程，若无可回收，则新建线程。
 
@@ -576,9 +583,34 @@ set方法首先通过`Thread.currentThread()`方法来获取当前线程，然�
 	+ 如果长时间没有往线程池中提交任务，即如果工作线程空闲了指定的时间(默认为1分钟)，则该工作线程将自动终止。终止后，如果你又提交了新的任务，则线程池重新创建一个工作线程。
 	+ 在使用CachedThreadPool时，一定要注意控制任务的数量，否则，由于大量线程同时运行，很有会造成系统瘫痪。
 
+	```
+	public static ExecutorService newCachedThreadPool() {
+        return new ThreadPoolExecutor(0, Integer.MAX_VALUE,
+                                      60L, TimeUnit.SECONDS,
+                                      new SynchronousQueue<Runnable>());
+    }
+	```
+	
+
 + **ScheduledThreadPool**:一个大小无限的线程池。此线程池支持定时以及周期性执行任务的需求。
 
+	```
+	public ScheduledThreadPoolExecutor(int corePoolSize) {
+	        super(corePoolSize, Integer.MAX_VALUE, 0, NANOSECONDS,
+	              new DelayedWorkQueue());
+	    }
+	```
+
 + **SingleThreadExecutor**: 创建一个单线程的线程池。这个线程池只有一个线程在工作，也就是相当于单线程串行执行所有任务。如果这个唯一的线程因为异常结束，那么会有一个新的线程来替代它。此线程池保证所有任务的执行顺序按照任务的提交顺序执行。
+
+	```
+	public static ExecutorService newSingleThreadExecutor() {
+	        return new FinalizableDelegatedExecutorService
+	            (new ThreadPoolExecutor(1, 1,
+	                                    0L, TimeUnit.MILLISECONDS,
+	                                    new LinkedBlockingQueue<Runnable>()));
+	    }
+	```
 
 
 
@@ -598,5 +630,13 @@ set方法首先通过`Thread.currentThread()`方法来获取当前线程，然�
 [深入理解并发/并行，阻塞/非阻塞，同步/异步](https://www.jianshu.com/p/2116fff869b6)
 
 
+echo 'export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/homebrew-bottles' >> ~/.zshrc 
+
+source ~/.zshrc
+
+cd "$(brew --repo)/Library/Taps/homebrew/homebrew-core"
+
+
+git remote set-url origin https://mirrors.ustc.edu.cn/homebrew-core.git
 
 

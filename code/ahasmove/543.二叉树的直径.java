@@ -44,8 +44,9 @@ class Solution {
 
     public int getDeep(TreeNode root) {
         if (root == null) {
-            return 0;
+                     return 0;
         }
+        
         int left = getDeep(root.left);
         int right = getDeep(root.right);
         // 维护左右子树深度和最大值即可
