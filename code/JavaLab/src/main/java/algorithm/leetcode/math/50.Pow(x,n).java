@@ -1,4 +1,4 @@
-package algorithm.leetcode.string_array;
+package algorithm.leetcode.math;
 
 /**
  * https://leetcode-cn.com/problems/powx-n/

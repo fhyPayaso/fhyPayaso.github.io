@@ -1,4 +1,4 @@
-package algorithm.leetcode.string_array;
+package algorithm.leetcode.simulate;
 
 /**
  * https://leetcode-cn.com/problems/teemo-attacking/

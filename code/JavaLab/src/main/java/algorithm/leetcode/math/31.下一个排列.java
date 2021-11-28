@@ -1,4 +1,4 @@
-package algorithm.leetcode.string_array;
+package algorithm.leetcode.math;
 
 import java.util.Arrays;
 

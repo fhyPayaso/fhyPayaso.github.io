@@ -1,4 +1,4 @@
-package algorithm.leetcode.string_array;
+package algorithm.leetcode.search;
 
 /**
  * https://leetcode-cn.com/problems/number-of-islands/
