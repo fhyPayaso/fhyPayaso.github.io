@@ -23,6 +23,7 @@ class LC209 {
             int width = right - left + 1;
 
             if (num == target) {
+                // 如果和相等, 右指针向右移动
                 flag = true;
                 res = Math.min(res, width);
                 right++;
@@ -32,11 +33,13 @@ class LC209 {
                 num += nums[right];
 
             } else if (num > target) {
+                // 如果和大于, 左指针向右移动
                 flag = true;
                 res = Math.min(res, width);
                 num -= nums[left];
                 left++;
             } else {
+                // 如果和小于, 右指针向右移动
                 right++;
                 if (right >= nums.length) {
                     break;

@@ -1,4 +1,4 @@
-package algorithm.leetcode.string_array;
+package algorithm.leetcode.dp;
 
 /**
  * https://leetcode-cn.com/problems/longest-increasing-subsequence/

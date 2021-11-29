@@ -1,4 +1,4 @@
-package algorithm.leetcode.other;
+package algorithm.leetcode.bit;
 
 /**
  * https://leetcode-cn.com/problems/reverse-bits/

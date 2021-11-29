@@ -1,4 +1,4 @@
-package algorithm.leetcode.string_array;
+package algorithm.leetcode.string_array.unclass;
 
 import java.util.ArrayList;
 import java.util.Arrays;

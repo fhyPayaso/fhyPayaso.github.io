@@ -1,4 +1,4 @@
-package algorithm.leetcode.string_array;
+package algorithm.leetcode.string_array.unclass;
 
 /**
  * https://leetcode-cn.com/problems/longest-palindromic-substring/
