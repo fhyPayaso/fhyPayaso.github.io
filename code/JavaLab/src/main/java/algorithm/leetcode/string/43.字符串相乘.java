@@ -1,4 +1,4 @@
-package algorithm.leetcode.string_array;
+package algorithm.leetcode.string;
 
 /**
  * https://leetcode-cn.com/problems/multiply-strings/
